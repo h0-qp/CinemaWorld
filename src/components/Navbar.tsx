@@ -70,10 +70,15 @@ export default function Navbar({ activeSection, setActiveSection, onSelectWatchl
             className="flex items-center gap-3.5 cursor-pointer group" 
             onClick={() => handleNavClick('hero')}
           >
-            <div className="relative w-11 h-11 border border-[#C5A059]/50 flex items-center justify-center bg-[#0B0B0B] group-hover:border-[#C5A059] transition-all shadow-lg group-hover:shadow-[0_0_15px_rgba(197,160,89,0.25)]">
-              <Film className="w-5 h-5 text-[#C5A059] transition-transform duration-300 group-hover:scale-110" />
-              <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-[#C5A059]" />
-              <div className="absolute -bottom-1 -left-1 w-2 h-2 border-b border-l border-[#C5A059]" />
+            <div className="relative w-12 h-12 border border-[#C5A059]/60 overflow-hidden flex items-center justify-center bg-[#0B0B0B] group-hover:border-[#C5A059] transition-all shadow-lg group-hover:shadow-[0_0_15px_rgba(197,160,89,0.35)] shrink-0">
+              <img 
+                src="/logo.jpg" 
+                alt="Cinema World" 
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                referrerPolicy="no-referrer"
+              />
+              <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-[#C5A059] pointer-events-none" />
+              <div className="absolute -bottom-1 -left-1 w-2 h-2 border-b border-l border-[#C5A059] pointer-events-none" />
             </div>
             <div className="text-right">
               <span className="block font-cinzel text-xl sm:text-2xl font-extrabold tracking-[0.18em] text-[#F3F4F6] group-hover:text-[#C5A059] transition-colors leading-tight">

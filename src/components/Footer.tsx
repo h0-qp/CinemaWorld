@@ -13,8 +13,13 @@ export default function Footer() {
           {/* Masthead Colophon */}
           <div className="md:col-span-6 space-y-4">
             <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 border border-[#C5A059] flex items-center justify-center bg-[#0A0A0A] shadow-lg">
-                <Film className="w-5 h-5 text-[#C5A059]" />
+              <div className="w-11 h-11 border border-[#C5A059] overflow-hidden flex items-center justify-center bg-[#0A0A0A] shadow-lg shrink-0">
+                <img 
+                  src="/logo.jpg" 
+                  alt="Cinema World" 
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
               </div>
               <div>
                 <span className="font-cinzel text-xl font-bold tracking-[0.18em] text-[#F3F4F6] block">
