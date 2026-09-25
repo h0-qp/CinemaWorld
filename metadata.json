@@ -1,0 +1,6 @@
+{
+  "name": "Cinema World",
+  "description": "المنصة الرسمية لقناة Cinema World المتخصصة بأخبار وترشيحات السينما العالمية ورادار الإصدارات.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
