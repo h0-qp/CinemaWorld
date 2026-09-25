@@ -16,18 +16,26 @@ export interface Movie {
   director?: string;
   cast?: string[];
   spotlightReason?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface TriviaQuestion {
-  id: number;
-  question: string;
-  options: string[];
-  correctIndex: number;
-  explanation: string;
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  content: string;
+  imageUrl?: string;
+  category: string;
+  date: string;
+  source?: string;
+  isHot?: boolean;
+  createdAt?: string;
 }
 
 export type GenreFilter = 
   | 'All'
+  | 'Watchlist'
   | 'Sci-Fi'
   | 'Drama'
   | 'Action'

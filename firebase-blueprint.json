@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Stores user profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "maxLength": 128, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "displayName": { "type": "string", "maxLength": 100 },
+        "email": { "type": "string", "maxLength": 150 },
+        "photoURL": { "type": "string", "maxLength": 500 },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "displayName"]
+    },
+    "UserWatchlistItem": {
+      "title": "UserWatchlistItem",
+      "description": "A film or television title bookmarked by the user",
+      "type": "object",
+      "properties": {
+        "movieId": { "type": "string", "maxLength": 64, "pattern": "^[a-zA-Z0-9_\\-]+$" },
+        "title": { "type": "string", "maxLength": 150 },
+        "posterUrl": { "type": "string", "maxLength": 500 },
+        "year": { "type": "number" },
+        "rating": { "type": "number" },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["movieId", "title"]
+    },
+    "Movie": {
+      "title": "Movie",
+      "description": "Curated movie or series in the archive",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 150 },
+        "originalTitle": { "type": "string", "maxLength": 150 },
+        "posterUrl": { "type": "string", "maxLength": 500 },
+        "backdropUrl": { "type": "string", "maxLength": 500 },
+        "year": { "type": "number" },
+        "rating": { "type": "number" },
+        "genre": { "type": "array", "items": { "type": "string" } },
+        "duration": { "type": "string", "maxLength": 64 },
+        "synopsis": { "type": "string", "maxLength": 3000 },
+        "trailerUrl": { "type": "string", "maxLength": 500 },
+        "releaseDate": { "type": "string", "maxLength": 64 },
+        "isUpcoming": { "type": "boolean" },
+        "director": { "type": "string", "maxLength": 128 },
+        "cast": { "type": "array", "items": { "type": "string" } },
+        "spotlightReason": { "type": "string", "maxLength": 1000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "posterUrl", "year", "rating", "synopsis"]
+    },
+    "NewsItem": {
+      "title": "NewsItem",
+      "description": "Cinematic news article or festival dispatch",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 64 },
+        "title": { "type": "string", "maxLength": 250 },
+        "summary": { "type": "string", "maxLength": 2000 },
+        "content": { "type": "string", "maxLength": 8000 },
+        "imageUrl": { "type": "string", "maxLength": 500 },
+        "category": { "type": "string", "maxLength": 64 },
+        "date": { "type": "string", "maxLength": 64 },
+        "source": { "type": "string", "maxLength": 100 },
+        "isHot": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "title", "summary", "date"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}/profile/info": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores personal user profile settings and metadata"
+    },
+    "/users/{userId}/watchlist/{movieId}": {
+      "schema": { "$ref": "#/entities/UserWatchlistItem" },
+      "description": "Collection of films bookmarked to the user's personal watchlist"
+    },
+    "/movies/{movieId}": {
+      "schema": { "$ref": "#/entities/Movie" },
+      "description": "Movies and television entries managed by the editorial staff"
+    },
+    "/news/{newsId}": {
+      "schema": { "$ref": "#/entities/NewsItem" },
+      "description": "Editorial news and festival reports"
+    }
+  }
+}

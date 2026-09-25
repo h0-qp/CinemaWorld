@@ -7,26 +7,41 @@ interface SearchBarProps {
 
 export default function SearchBar({ searchQuery, setSearchQuery }: SearchBarProps) {
   return (
-    <div className="relative w-full max-w-xl mx-auto mb-6">
-      <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none text-[#777770]">
-        <Search className="w-4 h-4" />
+    <div className="max-w-2xl mx-auto mb-8">
+      <div className="relative group">
+        
+        {/* Subtle Gold Hover Glow */}
+        <div className="absolute -inset-0.5 bg-[#C5A059]/20 rounded-none blur-sm opacity-0 group-hover:opacity-100 transition-opacity" />
+
+        <div className="relative flex items-center bg-[#0C0C0C] border border-[#202020] focus-within:border-[#C5A059] transition-all shadow-xl">
+          <div className="p-3.5 text-[#777] group-hover:text-[#C5A059] transition-colors">
+            <Search className="w-4 h-4" />
+          </div>
+
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="ابحث عن فيلم، مخرج (نولان، فيلنوف...)، أو تصنيف في الأرشيف..."
+            className="w-full bg-transparent py-3.5 pr-2 pl-4 text-xs sm:text-sm text-[#F5F5F3] placeholder-[#666] font-serif focus:outline-none text-right"
+          />
+
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="p-3 text-[#777] hover:text-white transition-colors"
+              aria-label="مسح البحث"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+
+          <div className="hidden sm:block pl-3 text-[10px] font-mono text-[#555] whitespace-nowrap">
+            PRESTIGE SEARCH
+          </div>
+        </div>
+
       </div>
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="ابحث عن اسم الفيلم بالإنجليزية، المخرج، أو التصنيف..."
-        className="w-full pr-11 pl-10 py-3 bg-[#111111] border border-[#222222] text-[#E8E8E6] placeholder-[#666660] text-xs sm:text-sm focus:outline-none focus:border-[#C5A059] transition-colors"
-      />
-      {searchQuery && (
-        <button
-          onClick={() => setSearchQuery('')}
-          className="absolute inset-y-0 left-0 pl-4 flex items-center text-[#777770] hover:text-[#E8E8E6] transition-colors"
-          aria-label="مسح البحث"
-        >
-          <X className="w-4 h-4" />
-        </button>
-      )}
     </div>
   );
 }
