@@ -96,7 +96,7 @@ export default function App() {
   // Public Classical Cinema World Portal
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-[#0B0B0B] text-[#E8E8E6] selection:bg-[#C5A059]/20 selection:text-[#E2C378]">
+      <div className="min-h-screen bg-[#0B0E14] text-[#E2E8F0] selection:bg-[#E50914]/30 selection:text-white">
         
         {/* Sticky Classical Masthead */}
         <Navbar

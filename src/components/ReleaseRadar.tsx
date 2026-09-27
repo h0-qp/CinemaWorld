@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Play, Star, Clock, Ticket } from 'lucide-react';
+import { Calendar, Play, Clock } from 'lucide-react';
 import { Movie } from '../types';
 
 interface ReleaseRadarProps {
@@ -23,35 +23,31 @@ export default function ReleaseRadar({ upcomingMovies, onWatchTrailer }: Release
   });
 
   return (
-    <section id="radar" className="relative py-24 bg-[#0A0A0A] border-b border-[#181818] overflow-hidden">
-      {/* Subtle Grain Background */}
-      <div className="absolute inset-0 cinema-grain opacity-20 pointer-events-none" />
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="radar" className="relative py-20 bg-[#0B0E14] border-b border-[#1E2433]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-14 gap-6 pb-6 border-b border-[#181818]">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4 pb-6 border-b border-[#1E2433]">
           <div className="text-right">
-            <div className="flex items-center gap-2 text-xs font-cinzel text-[#C5A059] uppercase tracking-[0.25em] mb-2 font-bold">
-              <span className="w-2 h-2 rounded-full bg-[#C5A059] shadow-[0_0_8px_#C5A059]" />
-              <span>THEATRICAL ROADMAP & COUNTDOWN</span>
-            </div>
-            <h2 className="text-2xl sm:text-4xl font-extrabold font-cinzel text-[#F8F8F6] tracking-wide cinema-glow">
+            <span className="text-xs font-semibold text-[#E50914] uppercase tracking-wider block mb-1">
+              جدول العروض المنتظرة
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               رادار الإصدارات والتقويم السينمائي
             </h2>
-            <p className="text-xs sm:text-sm text-[#94948C] mt-1 font-serif">
-              جدول الترقب الرسمي والعد التنازلي الحي لأضخم العروض السينمائية القادمة لدور العرض العالمية وIMAX.
+            <p className="text-sm text-[#94A3B8] mt-1">
+              مواعيد طرح أحدث الأفلام في صالات السينما مع عد تنازلي مباشر للإطلاق.
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5 text-xs font-mono text-[#A1A19A] border border-[#222222] px-4 py-2 bg-[#0E0E0E] shadow-sm">
-            <Calendar className="w-3.5 h-3.5 text-[#C5A059]" />
-            <span>CALENDAR SEASON · 2026/2027</span>
+          <div className="flex items-center gap-2 text-xs font-medium text-[#94A3B8] px-3 py-1.5 rounded-md bg-[#131722] border border-[#202738] w-fit">
+            <Calendar className="w-4 h-4 text-[#E50914]" />
+            <span>موسم سينما 2026 / 2027</span>
           </div>
         </div>
 
         {/* Theatrical Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {sortedUpcoming.map((movie) => (
             <TheatricalCountdownCard key={movie.id} movie={movie} onWatchTrailer={onWatchTrailer} />
           ))}
@@ -96,32 +92,26 @@ function TheatricalCountdownCard({ movie, onWatchTrailer }: TheatricalCardProps)
   }, [movie.releaseDate]);
 
   return (
-    <div className="film-card flex flex-col justify-between text-right bg-[#0C0C0C] group">
+    <div className="flex flex-col justify-between text-right rounded-xl overflow-hidden bg-[#121622] border border-[#1E2536] hover:border-[#2E394E] transition-all duration-300 shadow-md">
       
-      {/* Visual Header with Cinematic Ratio Frame */}
-      <div className="relative h-64 overflow-hidden border-b border-[#1A1A1A] bg-black">
+      {/* Header Backdrop */}
+      <div className="relative h-56 overflow-hidden bg-[#0A0D14]">
         <img
           src={movie.backdropUrl || movie.posterUrl}
           alt={movie.title}
-          className="w-full h-full object-cover filter contrast-[1.12] brightness-90 group-hover:brightness-105 group-hover:scale-105 transition-all duration-700"
+          className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0C0C0C] via-transparent to-black/70" />
-        
-        {/* Rating Score Placard */}
-        <div className="absolute top-3 right-3 px-2.5 py-1 bg-black/85 backdrop-blur-md border border-[#2B2B2B] text-[#E2C378] font-mono text-xs flex items-center gap-1 shadow-lg">
-          <Star className="w-3 h-3 fill-current text-[#C5A059]" />
-          <span>{movie.rating} EXP</span>
-        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-[#121622] via-transparent to-black/60" />
 
-        {/* Premiere Status Kicker */}
-        <div className="absolute top-3 left-3 px-2.5 py-1 bg-[#C5A059]/15 border border-[#C5A059]/40 text-[#E2C378] font-mono text-[10px] uppercase tracking-wider backdrop-blur-md">
-          UPCOMING PREMIERE
+        {/* Release Date Badge */}
+        <div className="absolute top-3 right-3 px-2.5 py-1 rounded bg-black/70 backdrop-blur-md border border-white/10 text-white text-xs font-medium">
+          {movie.releaseDate || 'قريباً في الصالات'}
         </div>
 
         {/* Genre Tags */}
         <div className="absolute bottom-3 right-3 flex flex-wrap gap-1.5">
           {movie.genre.map((g, idx) => (
-            <span key={idx} className="px-2 py-0.5 bg-black/80 backdrop-blur-md border border-[#242424] text-[#D4AF37] font-mono text-[10px] uppercase">
+            <span key={idx} className="text-[11px] font-medium text-slate-300 bg-black/60 backdrop-blur-sm px-2 py-0.5 rounded">
               {g}
             </span>
           ))}
@@ -129,60 +119,59 @@ function TheatricalCountdownCard({ movie, onWatchTrailer }: TheatricalCardProps)
       </div>
 
       {/* Narrative Body */}
-      <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
         <div>
-          <div className="text-[10px] font-mono text-[#888880] uppercase tracking-wider mb-1 flex items-center gap-1.5">
-            <Ticket className="w-3 h-3 text-[#C5A059]" />
-            <span>DIRECTED BY {movie.director?.toUpperCase() || 'STUDIO MASTER'}</span>
-          </div>
-          <h3 className="text-xl font-bold font-cinzel text-[#F8F8F6] mb-2 leading-snug group-hover:text-[#C5A059] transition-colors">
+          <span className="text-xs text-[#94A3B8] font-medium block mb-1">
+            إخراج: {movie.director || 'غير معلن'}
+          </span>
+          <h3 className="text-lg font-bold text-white mb-1.5 leading-snug">
             {movie.title}
           </h3>
-          <p className="text-xs text-[#9E9E96] line-clamp-2 leading-relaxed font-serif">
+          <p className="text-xs text-[#94A3B8] line-clamp-2 leading-relaxed">
             {movie.synopsis}
           </p>
         </div>
 
-        {/* Marquee Countdown Board with Retro Analog Style */}
-        <div className="border border-[#1E1E1E] bg-[#070707] p-3.5 text-center shadow-inner">
-          <div className="flex items-center justify-center gap-1.5 mb-2.5 text-[10px] font-mono uppercase tracking-widest text-[#C5A059]">
-            <Clock className="w-3 h-3 animate-spin" style={{ animationDuration: '6s' }} />
-            <span>LIVE THEATRICAL COUNTDOWN</span>
+        {/* Clean Countdown Board */}
+        <div className="rounded-lg bg-[#0E121A] border border-[#1A202E] p-3 text-center">
+          <div className="flex items-center justify-center gap-1.5 mb-2 text-xs font-medium text-[#94A3B8]">
+            <Clock className="w-3.5 h-3.5 text-[#E50914]" />
+            <span>العد التنازلي لموعد العرض</span>
           </div>
 
           {timeLeft.isExpired ? (
-            <div className="py-2.5 text-[#C5A059] font-mono text-xs font-bold border border-[#C5A059]/40 bg-[#121212]">
-              NOW SHOWING IN WORLD THEATERS
+            <div className="py-2 text-[#22C55E] text-xs font-semibold">
+              الفيلم متوفر الآن في دور العرض
             </div>
           ) : (
-            <div className="grid grid-cols-4 gap-2 text-center font-mono">
-              <div className="py-2 bg-[#101010] border border-[#1A1A1A] group-hover:border-[#2A2A2A] transition-colors">
-                <span className="block text-lg font-bold text-[#E2C378] tracking-tight">{timeLeft.days}</span>
-                <span className="text-[8px] text-[#777] uppercase tracking-widest">DAYS</span>
+            <div className="grid grid-cols-4 gap-2 text-center">
+              <div className="py-1.5 bg-[#141824] rounded border border-[#202738]">
+                <span className="block text-base font-bold text-white">{timeLeft.days}</span>
+                <span className="text-[10px] text-[#64748B]">يوم</span>
               </div>
-              <div className="py-2 bg-[#101010] border border-[#1A1A1A] group-hover:border-[#2A2A2A] transition-colors">
-                <span className="block text-lg font-bold text-[#F3F4F6] tracking-tight">{timeLeft.hours}</span>
-                <span className="text-[8px] text-[#777] uppercase tracking-widest">HOURS</span>
+              <div className="py-1.5 bg-[#141824] rounded border border-[#202738]">
+                <span className="block text-base font-bold text-white">{timeLeft.hours}</span>
+                <span className="text-[10px] text-[#64748B]">ساعة</span>
               </div>
-              <div className="py-2 bg-[#101010] border border-[#1A1A1A] group-hover:border-[#2A2A2A] transition-colors">
-                <span className="block text-lg font-bold text-[#F3F4F6] tracking-tight">{timeLeft.minutes}</span>
-                <span className="text-[8px] text-[#777] uppercase tracking-widest">MIN</span>
+              <div className="py-1.5 bg-[#141824] rounded border border-[#202738]">
+                <span className="block text-base font-bold text-white">{timeLeft.minutes}</span>
+                <span className="text-[10px] text-[#64748B]">دقيقة</span>
               </div>
-              <div className="py-2 bg-[#101010] border border-[#1A1A1A] group-hover:border-[#2A2A2A] transition-colors">
-                <span className="block text-lg font-bold text-[#C5A059] tracking-tight">{timeLeft.seconds}</span>
-                <span className="text-[8px] text-[#777] uppercase tracking-widest">SEC</span>
+              <div className="py-1.5 bg-[#141824] rounded border border-[#202738]">
+                <span className="block text-base font-bold text-[#E50914]">{timeLeft.seconds}</span>
+                <span className="text-[10px] text-[#64748B]">ثانية</span>
               </div>
             </div>
           )}
         </div>
 
-        {/* Watch Trailer Action */}
+        {/* Trailer Button */}
         <button
           onClick={() => onWatchTrailer(movie)}
-          className="w-full flex items-center justify-center gap-2 py-2.5 bg-[#141414] hover:bg-[#C5A059] text-[#E8E8E6] hover:text-[#070707] border border-[#222222] hover:border-[#C5A059] text-xs font-mono font-semibold uppercase tracking-wider transition-all duration-300 shadow-sm"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#181F2E] hover:bg-[#E50914] text-white text-xs font-semibold transition-colors duration-200"
         >
           <Play className="w-3.5 h-3.5 fill-current" />
-          <span>مشاهدة الإعلان الترويجي</span>
+          <span>مشاهدة التريلر الترويجي</span>
         </button>
 
       </div>

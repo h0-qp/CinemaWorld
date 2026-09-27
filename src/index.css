@@ -2,95 +2,52 @@
 
 @layer base {
   body {
-    font-family: 'Cairo', 'Amiri', -apple-system, BlinkMacSystemFont, 'Segoe UI', serif;
-    background-color: #070707;
-    color: #E6E6E3;
+    font-family: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: #0B0E14;
+    color: #E2E8F0;
     overflow-x: hidden;
   }
 }
 
-/* Custom Serif & Display Fonts */
+/* Authentic Typography */
 .font-cinzel {
-  font-family: 'Cinzel', serif;
-  letter-spacing: 0.08em;
+  font-family: 'Cairo', 'Cinzel', system-ui, sans-serif;
 }
 
 .font-cormorant {
-  font-family: 'Cormorant Garamond', 'Amiri', serif;
+  font-family: 'Amiri', 'Cairo', serif;
 }
 
 .font-amiri {
   font-family: 'Amiri', serif;
 }
 
-/* Grain Film Texture Overlay */
-.cinema-grain {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 0);
-  background-size: 24px 24px;
+/* Modern Cinema Surface */
+.cinema-card {
+  background-color: #121620;
+  border: 1px solid #1E2433;
+  border-radius: 0.75rem;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Authentic 35mm Sprocket Strip */
-.sprocket-strip {
-  background-image: repeating-linear-gradient(
-    to bottom,
-    transparent 0px,
-    transparent 12px,
-    #000 12px,
-    #000 22px
-  );
+.cinema-card:hover {
+  border-color: #333C52;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.75);
 }
 
-/* Cinematic Hairlines & Borders */
-.film-border {
-  border: 1px solid #1C1C1C;
-}
-
-.film-border-gold {
-  border: 1px solid rgba(197, 160, 89, 0.35);
-}
-
-.film-card {
-  background: #0E0E0E;
-  border: 1px solid #1B1B1B;
-  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  position: relative;
-}
-
-.film-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border: 1px solid transparent;
-  pointer-events: none;
-  transition: border-color 0.4s ease;
-}
-
-.film-card:hover {
-  border-color: #C5A059;
-  transform: translateY(-4px);
-  box-shadow: 0 16px 36px -12px rgba(0, 0, 0, 0.85), 0 0 20px -8px rgba(197, 160, 89, 0.15);
-}
-
-.film-card:hover::before {
-  border-color: rgba(197, 160, 89, 0.2);
-}
-
-/* Subtle Film Lighting Glow */
-.cinema-glow {
-  text-shadow: 0 0 20px rgba(197, 160, 89, 0.35);
-}
-
-/* Custom Understated Scrollbar */
+/* Understated Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #070707;
+  background: #0B0E14;
 }
 ::-webkit-scrollbar-thumb {
-  background: #202020;
-  border-radius: 2px;
+  background: #1E2433;
+  border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C5A059;
+  background: #E50914;
 }

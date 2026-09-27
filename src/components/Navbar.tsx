@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Film, Radio, Compass, Clapperboard, Send, Menu, X, LogIn, LogOut, Bookmark, User, Newspaper, Sparkles } from 'lucide-react';
+import { Film, Radio, Compass, Clapperboard, Send, Menu, X, LogIn, LogOut, Bookmark, User, Newspaper } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
@@ -14,11 +14,11 @@ export default function Navbar({ activeSection, setActiveSection, onSelectWatchl
   const { user, signIn, signOut, watchlist } = useAuth();
 
   const navItems = [
-    { id: 'hero', label: 'الرئيسية', icon: Film, enLabel: 'FEATURED' },
-    { id: 'radar', label: 'رادار الإصدارات', icon: Radio, enLabel: 'RADAR 2026' },
-    { id: 'recommendations', label: 'مختارات السينما', icon: Compass, enLabel: 'ARCHIVE' },
-    { id: 'news', label: 'النشرة الإخبارية', icon: Newspaper, enLabel: 'GAZETTE' },
-    { id: 'auteurs', label: 'كبار المخرجين', icon: Clapperboard, enLabel: 'AUTEURS' },
+    { id: 'hero', label: 'الرئيسية', icon: Film },
+    { id: 'radar', label: 'رادار الإصدارات', icon: Radio },
+    { id: 'recommendations', label: 'ترشيحات الأفلام', icon: Compass },
+    { id: 'news', label: 'الأخبار والتقارير', icon: Newspaper },
+    { id: 'auteurs', label: 'كبار المخرجين', icon: Clapperboard },
   ];
 
   const handleNavClick = (id: string) => {
@@ -39,150 +39,115 @@ export default function Navbar({ activeSection, setActiveSection, onSelectWatchl
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#070707]/95 backdrop-blur-md border-b border-[#1A1A1A]">
-      {/* Top Gazette Microbar with 35mm film perforation line */}
-      <div className="hidden sm:block border-b border-[#141414] py-1 bg-[#050505] text-[10px] text-[#73736E] tracking-wider">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            <span className="text-[#C5A059] font-cinzel font-semibold flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#C5A059] animate-pulse" />
-              CINEMA WORLD ARCHIVE
-            </span>
-            <span className="text-[#262626]">|</span>
-            <span className="font-serif">المرجع المعتمد لتوثيق روائع السينما العالمية ونقد الفن السابع</span>
-          </div>
-          <div className="flex items-center gap-3 font-mono text-[10px] text-[#888880]">
-            <span className="flex items-center gap-1">
-              <Sparkles className="w-2.5 h-2.5 text-[#C5A059]" />
-              CURATED 35MM / 70MM IMAX EDITION
-            </span>
-            <span className="text-[#2A2A2A]">·</span>
-            <span>DOMAIN: cinemaworld.info</span>
-          </div>
-        </div>
-      </div>
-
+    <header className="sticky top-0 z-50 bg-[#0B0E14]/90 backdrop-blur-md border-b border-[#1E2433]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20">
+        <div className="flex items-center justify-between h-16 sm:h-18">
           
-          {/* Masthead Branding with Authentic Roman Seal */}
+          {/* Zone 1: Brand Wordmark & Official Channel Logo */}
           <div 
-            className="flex items-center gap-3.5 cursor-pointer group" 
+            className="flex items-center gap-3 cursor-pointer group select-none" 
             onClick={() => handleNavClick('hero')}
           >
-            <div className="relative w-12 h-12 border border-[#C5A059]/60 overflow-hidden flex items-center justify-center bg-[#0B0B0B] group-hover:border-[#C5A059] transition-all shadow-lg group-hover:shadow-[0_0_15px_rgba(197,160,89,0.35)] shrink-0">
+            <div className="w-10 h-10 rounded-lg overflow-hidden bg-[#131722] border border-[#2A3245] group-hover:border-[#E50914] transition-colors shrink-0 shadow-md">
               <img 
                 src="/logo.jpg" 
                 alt="Cinema World" 
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute -top-1 -right-1 w-2 h-2 border-t border-r border-[#C5A059] pointer-events-none" />
-              <div className="absolute -bottom-1 -left-1 w-2 h-2 border-b border-l border-[#C5A059] pointer-events-none" />
             </div>
             <div className="text-right">
-              <span className="block font-cinzel text-xl sm:text-2xl font-extrabold tracking-[0.18em] text-[#F3F4F6] group-hover:text-[#C5A059] transition-colors leading-tight">
-                CINEMA WORLD
+              <span className="block font-bold text-lg sm:text-xl text-white tracking-wide group-hover:text-[#E50914] transition-colors leading-tight">
+                سينما وورلد
               </span>
-              <span className="block text-[10px] text-[#7A7A72] tracking-[0.25em] font-mono uppercase mt-0.5">
-                EST. ARCHIVE · ARABIC EDITION
+              <span className="block text-[11px] text-[#94A3B8] font-medium leading-none">
+                CINEMA WORLD
               </span>
             </div>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1 lg:space-x-1.5 space-x-reverse">
+          {/* Zone 2: Clean Typography Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1 lg:gap-2">
             {navItems.map((item) => {
-              const Icon = item.icon;
               const isActive = activeSection === item.id;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleNavClick(item.id)}
-                  className={`relative flex flex-col items-center px-4 py-2 text-xs font-mono uppercase tracking-wider transition-all duration-200 group ${
+                  className={`px-3.5 py-1.5 rounded-md text-sm font-medium transition-colors ${
                     isActive
-                      ? 'text-[#C5A059] font-bold bg-[#111111] border-x border-[#1F1F1F]'
-                      : 'text-[#96968F] hover:text-[#F3F4F6] hover:bg-[#0E0E0E]'
+                      ? 'bg-[#1E2433] text-white font-semibold'
+                      : 'text-[#94A3B8] hover:text-white hover:bg-[#151A26]'
                   }`}
                 >
-                  <div className="flex items-center gap-1.5">
-                    <Icon className={`w-3.5 h-3.5 transition-colors ${isActive ? 'text-[#C5A059]' : 'text-[#555] group-hover:text-[#C5A059]'}`} />
-                    <span>{item.label}</span>
-                  </div>
-                  <span className={`text-[8px] tracking-widest transition-colors ${isActive ? 'text-[#C5A059]/80' : 'text-[#444] group-hover:text-[#777]'}`}>
-                    {item.enLabel}
-                  </span>
-                  {isActive && (
-                    <div className="absolute bottom-0 inset-x-2 h-[2px] bg-gradient-to-r from-transparent via-[#C5A059] to-transparent" />
-                  )}
+                  {item.label}
                 </button>
               );
             })}
           </nav>
 
-          {/* User Auth & Telegram Link */}
+          {/* Zone 3: Actions (Telegram Channel + Watchlist / Auth) */}
           <div className="hidden md:flex items-center gap-3">
             {/* Telegram Channel Button */}
             <a
               href="https://t.me/cn_world"
               target="_blank"
               rel="noopener noreferrer"
-              className="relative group flex items-center gap-2 px-3.5 py-2 border border-[#C5A059]/40 bg-[#0E0E0E] text-[#C5A059] hover:bg-[#C5A059] hover:text-[#070707] text-xs font-mono uppercase tracking-wider transition-all duration-300"
+              className="flex items-center gap-2 px-3.5 py-1.5 rounded-md bg-[#151A26] hover:bg-[#1E2433] border border-[#252E40] text-sm text-[#E2E8F0] transition-colors"
             >
-              <Send className="w-3.5 h-3.5 fill-current transition-transform group-hover:-translate-x-0.5" />
-              <span>قناة تيليغرام</span>
+              <Send className="w-3.5 h-3.5 text-[#38BDF8]" />
+              <span>القناة على تيليغرام</span>
             </a>
 
-            {/* Firebase Auth Dropdown */}
+            {/* Watchlist Quick Button */}
+            <button
+              onClick={handleOpenWatchlist}
+              className="relative p-2 rounded-md bg-[#151A26] hover:bg-[#1E2433] border border-[#252E40] text-[#94A3B8] hover:text-white transition-colors"
+              title="قائمة المشاهدة"
+              aria-label="قائمة المشاهدة"
+            >
+              <Bookmark className="w-4 h-4" />
+              {watchlist.length > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[#E50914] text-[10px] font-bold text-white flex items-center justify-center">
+                  {watchlist.length}
+                </span>
+              )}
+            </button>
+
+            {/* Auth Button */}
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                  className="flex items-center gap-2 px-3 py-1.5 border border-[#222222] hover:border-[#C5A059] bg-[#0E0E0E] transition-colors"
+                  className="flex items-center gap-2 p-1.5 rounded-md bg-[#151A26] hover:bg-[#1E2433] border border-[#252E40] text-sm text-white transition-colors"
                 >
                   {user.photoURL ? (
                     <img 
                       src={user.photoURL} 
                       alt={user.displayName || 'User'} 
-                      className="w-6 h-6 rounded-full object-cover border border-[#C5A059]"
+                      className="w-6 h-6 rounded-full object-cover"
                     />
                   ) : (
-                    <div className="w-6 h-6 rounded-full bg-[#1A1A1A] flex items-center justify-center">
-                      <User className="w-3.5 h-3.5 text-[#C5A059]" />
-                    </div>
+                    <User className="w-4 h-4 text-[#94A3B8]" />
                   )}
-                  <span className="text-xs font-mono text-zinc-200 truncate max-w-[100px]">
-                    {user.displayName?.split(' ')[0] || 'عضو'}
-                  </span>
+                  <span className="text-xs font-medium max-w-[100px] truncate">{user.displayName || 'حسابي'}</span>
                 </button>
 
-                {/* Dropdown Menu */}
                 {userDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-52 bg-[#0E0E0E] border border-[#242424] shadow-2xl py-2 z-50 text-right animate-fadeIn">
-                    <div className="px-4 py-2 border-b border-[#1A1A1A]">
-                      <span className="block text-xs font-bold text-white truncate">{user.displayName}</span>
-                      <span className="block text-[10px] text-zinc-500 font-mono truncate">{user.email}</span>
-                    </div>
-
+                  <div className="absolute left-0 mt-2 w-48 rounded-lg bg-[#151A26] border border-[#252E40] shadow-2xl py-1 text-right z-50">
                     <button
                       onClick={handleOpenWatchlist}
-                      className="w-full text-right px-4 py-2.5 text-xs text-[#E2C378] hover:bg-[#161616] flex items-center justify-between transition-colors"
+                      className="w-full px-4 py-2 text-xs text-[#CBD5E1] hover:text-white hover:bg-[#1E2433] flex items-center justify-between"
                     >
-                      <div className="flex items-center gap-2">
-                        <Bookmark className="w-3.5 h-3.5" />
-                        <span>قائمتي المحفوظة</span>
-                      </div>
-                      <span className="font-mono text-[10px] bg-[#1A1A1A] px-2 py-0.5 rounded text-white border border-[#2D2D2D]">
-                        {watchlist.length}
-                      </span>
+                      <span>قائمتي المحفوظة</span>
+                      <span className="text-[11px] font-semibold text-[#E50914]">{watchlist.length}</span>
                     </button>
-
                     <button
                       onClick={() => {
-                        setUserDropdownOpen(false);
                         signOut();
+                        setUserDropdownOpen(false);
                       }}
-                      className="w-full text-right px-4 py-2 text-xs text-rose-400 hover:bg-[#161616] flex items-center gap-2 border-t border-[#181818] mt-1 transition-colors"
+                      className="w-full px-4 py-2 text-xs text-rose-400 hover:bg-[#1E2433] flex items-center gap-2 border-t border-[#1F2637]"
                     >
                       <LogOut className="w-3.5 h-3.5" />
                       <span>تسجيل الخروج</span>
@@ -193,106 +158,87 @@ export default function Navbar({ activeSection, setActiveSection, onSelectWatchl
             ) : (
               <button
                 onClick={signIn}
-                className="flex items-center gap-2 px-3.5 py-2 bg-[#121212] hover:bg-[#C5A059] text-[#E8E8E6] hover:text-[#0B0B0B] border border-[#262626] hover:border-[#C5A059] text-xs font-mono uppercase tracking-wider transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#E50914] hover:bg-[#DC2626] text-white text-xs font-semibold shadow-sm transition-colors"
               >
-                <LogIn className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>تسجيل الدخول</span>
+                <LogIn className="w-3.5 h-3.5" />
+                <span>دخول</span>
               </button>
             )}
           </div>
 
-          {/* Mobile Actions */}
+          {/* Mobile Menu Button */}
           <div className="flex md:hidden items-center gap-2">
-            {user ? (
-              <button
-                onClick={handleOpenWatchlist}
-                className="p-2 border border-[#222222] text-[#C5A059] bg-[#0E0E0E]"
-                aria-label="قائمتي"
-              >
-                <Bookmark className="w-4 h-4 fill-current" />
-              </button>
-            ) : (
-              <button
-                onClick={signIn}
-                className="p-2 border border-[#222222] text-[#C5A059] bg-[#0E0E0E]"
-                aria-label="تسجيل الدخول"
-              >
-                <LogIn className="w-4 h-4" />
-              </button>
-            )}
+            <button
+              onClick={handleOpenWatchlist}
+              className="relative p-2 rounded-md bg-[#151A26] border border-[#252E40] text-[#94A3B8]"
+              aria-label="قائمتي"
+            >
+              <Bookmark className="w-4 h-4" />
+              {watchlist.length > 0 && (
+                <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#E50914] text-[9px] font-bold text-white flex items-center justify-center">
+                  {watchlist.length}
+                </span>
+              )}
+            </button>
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 border border-[#222222] bg-[#0E0E0E] text-[#E8E8E6] hover:border-[#C5A059] transition-colors"
+              className="p-2 rounded-md bg-[#151A26] border border-[#252E40] text-[#94A3B8] hover:text-white"
               aria-label="القائمة"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5 text-[#C5A059]" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
 
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0A0A0A] border-b border-[#1E1E1E] px-4 pt-3 pb-6 space-y-1">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            return (
+        <div className="md:hidden border-t border-[#1E2433] bg-[#0E121A] px-4 py-4 space-y-3">
+          <nav className="flex flex-col space-y-1">
+            {navItems.map((item) => (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center justify-between px-4 py-3 text-xs font-mono uppercase tracking-wider text-right transition-colors ${
-                  isActive
-                    ? 'bg-[#141414] text-[#C5A059] font-bold border-r-2 border-[#C5A059]'
-                    : 'text-[#A1A19A] hover:bg-[#101010] hover:text-[#F3F4F6]'
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-md text-sm font-medium transition-colors text-right ${
+                  activeSection === item.id
+                    ? 'bg-[#1E2433] text-white font-semibold'
+                    : 'text-[#94A3B8] hover:text-white hover:bg-[#151A26]'
                 }`}
               >
-                <div className="flex items-center gap-3">
-                  <Icon className="w-4 h-4 text-[#C5A059]" />
-                  <span>{item.label}</span>
-                </div>
-                <span className="text-[9px] text-[#555] tracking-widest">{item.enLabel}</span>
+                <item.icon className="w-4 h-4 text-[#94A3B8]" />
+                <span>{item.label}</span>
               </button>
-            );
-          })}
+            ))}
+          </nav>
 
-          <div className="pt-4 border-t border-[#181818] space-y-2">
-            {user ? (
-              <div className="p-3 bg-[#111111] border border-[#222222] space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-white font-bold">{user.displayName}</span>
-                  <button onClick={signOut} className="text-rose-400 text-[11px] font-mono">
-                    تسجيل الخروج
-                  </button>
-                </div>
-                <button
-                  onClick={handleOpenWatchlist}
-                  className="w-full flex items-center justify-center gap-2 py-2 bg-[#181818] text-[#E2C378] text-xs font-mono border border-[#2A2A2A]"
-                >
-                  <Bookmark className="w-3.5 h-3.5 fill-current" />
-                  <span>قائمتي المحفوظة ({watchlist.length})</span>
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={signIn}
-                className="w-full flex items-center justify-center gap-2 py-3 bg-[#111111] text-[#C5A059] border border-[#C5A059]/40 text-xs font-mono uppercase tracking-wider font-bold"
-              >
-                <LogIn className="w-3.5 h-3.5" />
-                <span>تسجيل الدخول بحساب Google</span>
-              </button>
-            )}
-
+          <div className="pt-3 border-t border-[#1E2433] flex flex-col gap-2">
             <a
               href="https://t.me/cn_world"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2 py-3 border border-[#C5A059] text-[#C5A059] text-xs font-mono uppercase tracking-wider font-bold bg-[#0D0D0D]"
+              className="flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-[#151A26] text-sm text-[#E2E8F0] border border-[#252E40]"
             >
-              <Send className="w-3.5 h-3.5 fill-current" />
-              <span>الانضمام لقناة تيليغرام (t.me/cn_world)</span>
+              <Send className="w-4 h-4 text-[#38BDF8]" />
+              <span>قناة تيليغرام الرسمية</span>
             </a>
+            {user ? (
+              <button
+                onClick={signOut}
+                className="flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-rose-950/40 text-rose-300 border border-rose-900/40 text-sm"
+              >
+                <LogOut className="w-4 h-4" />
+                <span>تسجيل الخروج ({user.displayName || 'الحساب'})</span>
+              </button>
+            ) : (
+              <button
+                onClick={signIn}
+                className="flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-[#E50914] text-white text-sm font-semibold"
+              >
+                <LogIn className="w-4 h-4" />
+                <span>تسجيل الدخول بحساب Google</span>
+              </button>
+            )}
           </div>
         </div>
       )}

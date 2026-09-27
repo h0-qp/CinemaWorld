@@ -1,4 +1,4 @@
-import { Send, Star, Play, Clapperboard, Bookmark, Volume2 } from 'lucide-react';
+import { Star, Play, Bookmark, Clock, Sparkles } from 'lucide-react';
 import { Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
 
@@ -12,199 +12,109 @@ export default function Hero({ featuredMovie, onWatchTrailer }: HeroProps) {
   const bookmarked = isBookmarked(featuredMovie.id);
 
   return (
-    <section id="hero" className="relative min-h-[92vh] flex items-center bg-[#070707] border-b border-[#181818] overflow-hidden">
+    <section id="hero" className="relative min-h-[85vh] flex items-center bg-[#0B0E14] border-b border-[#1E2433] overflow-hidden">
       
-      {/* Background Cinematic Texture with Golden Vignette & Film Lighting */}
+      {/* Cinematic Backdrop with Smooth Lighting Scrims */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
           src={featuredMovie.backdropUrl}
           alt={featuredMovie.title}
-          className="w-full h-full object-cover object-center opacity-30 filter contrast-125 brightness-75 scale-105 transition-transform duration-1000"
+          className="w-full h-full object-cover object-center opacity-25 filter brightness-75 scale-105"
         />
-        {/* Layered Lighting Gradients */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#070707] via-[#070707]/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#070707] via-[#070707]/85 to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(197,160,89,0.08),transparent_65%)]" />
-        <div className="absolute inset-0 cinema-grain opacity-40 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0E14] via-[#0B0E14]/90 to-transparent" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24 w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
           
-          {/* Main Editorial Column */}
-          <div className="lg:col-span-7 space-y-6 text-right">
+          {/* Main Editorial Details */}
+          <div className="lg:col-span-8 space-y-5 text-right">
             
-            {/* Editorial Category Header with Authentic Gazette Serif Kicker */}
-            <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-[#C5A059] shadow-[0_0_8px_#C5A059]" />
-              <span className="text-xs uppercase tracking-[0.25em] text-[#C5A059] font-cinzel font-bold">
-                WEEKLY ARCHIVE SPOTLIGHT · 70MM IMAX PRESENTATION
-              </span>
+            {/* Clean Section Kicker */}
+            <div className="flex items-center gap-2 text-xs font-semibold text-[#E50914] uppercase tracking-wider">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#E50914]" />
+              <span>ترشيح الأسبوع الحصري</span>
+              <span className="text-[#475569]">·</span>
+              <span className="text-[#94A3B8] font-normal">{featuredMovie.director}</span>
             </div>
 
-            {/* Title in Classical Monumental Roman Capital Typeface */}
-            <h1 className="text-4xl sm:text-6xl lg:text-7xl font-bold font-cinzel tracking-wider text-[#F8F8F6] leading-[1.08] cinema-glow">
+            {/* Movie Title */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white tracking-tight leading-[1.15]">
               {featuredMovie.title}
             </h1>
 
-            {/* Film Meta Strip */}
-            <div className="flex flex-wrap items-center gap-y-2 gap-x-4 text-xs font-mono text-[#999990] border-y border-[#181818] py-3.5 bg-[#0A0A0A]/40 backdrop-blur-sm">
-              <div className="flex items-center gap-1.5 text-[#E2C378] font-bold">
-                <Star className="w-3.5 h-3.5 fill-current" />
-                <span>{featuredMovie.rating} / 10 IMDb</span>
+            {/* Clean Metadata Line */}
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[#94A3B8] pt-1">
+              <div className="flex items-center gap-1.5 text-[#F59E0B] font-bold">
+                <Star className="w-4 h-4 fill-current" />
+                <span>{featuredMovie.rating} / 10</span>
               </div>
-              <span className="text-[#2B2B2B]">|</span>
-              <span className="text-zinc-200">{featuredMovie.year}</span>
-              <span className="text-[#2B2B2B]">|</span>
-              <span>{featuredMovie.duration}</span>
-              <span className="text-[#2B2B2B]">|</span>
-              <span className="text-[#C5A059] tracking-wider">
-                {featuredMovie.genre.join(' · ')}
-              </span>
-              <span className="text-[#2B2B2B]">|</span>
-              <span className="flex items-center gap-1 text-[#888]">
-                <Volume2 className="w-3 h-3 text-[#C5A059]" />
-                DOLBY ATMOS
+              <span className="text-[#334155]">·</span>
+              <span className="text-[#CBD5E1] font-medium">{featuredMovie.year}</span>
+              <span className="text-[#334155]">·</span>
+              <div className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 text-[#64748B]" />
+                <span>{featuredMovie.duration}</span>
+              </div>
+              <span className="text-[#334155]">·</span>
+              <span className="text-[#E2E8F0]">
+                {featuredMovie.genre.join(' ، ')}
               </span>
             </div>
 
-            {/* Synopsis in Eloquent Arabic Classical Prose */}
-            <p className="text-base sm:text-xl text-[#D8D8D2] leading-relaxed font-cormorant font-normal max-w-2xl">
+            {/* Synopsis */}
+            <p className="text-sm sm:text-base text-[#CBD5E1] leading-relaxed max-w-2xl font-normal">
               {featuredMovie.synopsis}
             </p>
 
-            {/* Critic's Dispatch Box with Classic Golden Frame */}
+            {/* Editorial Review Quote */}
             {featuredMovie.spotlightReason && (
-              <div className="relative p-5 bg-[#0C0C0C] border border-[#1E1E1E] border-r-4 border-r-[#C5A059] text-sm text-[#BFBFB8] shadow-xl">
-                <div className="text-[#C5A059] text-xs font-semibold uppercase tracking-wider mb-1.5 flex items-center gap-2 font-cinzel">
-                  <Clapperboard className="w-4 h-4 text-[#C5A059]" />
-                  <span>قراءة نقدية حصرية (CRITIC'S DISPATCH)</span>
-                </div>
-                <p className="italic font-serif leading-relaxed text-[#ECECE8] text-sm sm:text-base">
-                  "{featuredMovie.spotlightReason}"
-                </p>
-                {featuredMovie.director && (
-                  <div className="mt-3 pt-2.5 border-t border-[#181818] flex items-center justify-between text-xs text-[#888880] font-mono">
-                    <span>DIRECTED BY: <span className="text-white font-serif">{featuredMovie.director}</span></span>
-                    <span className="text-[#C5A059]">OFFICIAL VERDICT</span>
-                  </div>
-                )}
+              <div className="p-4 rounded-lg bg-[#131722] border border-[#202738] text-xs sm:text-sm text-[#94A3B8] leading-relaxed max-w-2xl">
+                <span className="font-semibold text-white block mb-1">رأي النقاد في سينما وورلد:</span>
+                "{featuredMovie.spotlightReason}"
               </div>
             )}
 
-            {/* Action Buttons with High-End Styling */}
-            <div className="flex flex-wrap items-center gap-3.5 pt-3">
+            {/* Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-3">
               <button
                 onClick={() => onWatchTrailer(featuredMovie)}
-                className="group relative flex items-center gap-2.5 px-6 py-3.5 bg-gradient-to-r from-[#C5A059] to-[#D4AF37] hover:from-[#D4AF37] hover:to-[#E2C378] text-[#070707] font-bold text-xs tracking-widest uppercase transition-all duration-300 shadow-[0_0_20px_rgba(197,160,89,0.25)] hover:shadow-[0_0_30px_rgba(197,160,89,0.4)]"
+                className="flex items-center gap-2.5 px-6 py-3 rounded-lg bg-[#E50914] hover:bg-[#DC2626] text-white font-semibold text-sm transition-all duration-200 shadow-md hover:shadow-lg active:scale-95"
               >
-                <Play className="w-4 h-4 fill-current transition-transform group-hover:scale-110" />
-                <span>مشاهدة الإعلان الرسمي 4K</span>
+                <Play className="w-4 h-4 fill-current" />
+                <span>مشاهدة الإعلان الرسمي</span>
               </button>
 
               <button
                 onClick={() => toggleWatchlist(featuredMovie)}
-                className={`flex items-center gap-2 px-5 py-3.5 border text-xs font-mono tracking-wider transition-all duration-300 ${
+                className={`flex items-center gap-2 px-5 py-3 rounded-lg border text-sm font-medium transition-colors ${
                   bookmarked
-                    ? 'bg-[#C5A059]/15 border-[#C5A059] text-[#E2C378] shadow-[0_0_15px_rgba(197,160,89,0.15)]'
-                    : 'bg-[#101010] hover:bg-[#161616] border-[#222222] hover:border-[#C5A059] text-zinc-300'
+                    ? 'bg-[#1E2638] border-[#38BDF8] text-[#38BDF8]'
+                    : 'bg-[#131722] hover:bg-[#1A2030] border-[#222B3D] text-[#CBD5E1] hover:text-white'
                 }`}
               >
-                <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current text-[#C5A059]' : 'text-[#888]'}`} />
-                <span>{bookmarked ? 'محفوظ في قائمتك السينمائية' : 'إضافة إلى قائمتي'}</span>
+                <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
+                <span>{bookmarked ? 'في قائمتك المحفوظة' : 'حفظ في قائمتي'}</span>
               </button>
-
-              <a
-                href="https://t.me/cn_world"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 px-5 py-3.5 bg-[#0F0F0F] hover:bg-[#141414] border border-[#202020] hover:border-[#C5A059]/60 text-[#E8E8E6] font-semibold text-xs tracking-wider transition-colors"
-              >
-                <Send className="w-4 h-4 text-[#229ED9]" />
-                <span>مجتمع تيليغرام الرسمي</span>
-              </a>
             </div>
 
           </div>
 
-          {/* Right Poster Column: 35mm Physical Film Framing */}
-          <div className="lg:col-span-5 flex justify-center">
-            <div className="relative group">
-              
-              {/* Outer Golden Halftone Glow */}
-              <div className="absolute -inset-1 bg-gradient-to-r from-[#C5A059]/20 to-transparent blur-xl opacity-75 group-hover:opacity-100 transition-opacity" />
-
-              {/* 35mm Sprocket Border Frame */}
-              <div className="relative p-3 border border-[#202020] bg-[#0A0A0A] shadow-2xl transition-all duration-500 group-hover:border-[#C5A059]/60">
-                
-                {/* Vintage Top Plate */}
-                <div className="flex items-center justify-between px-2 pb-2 mb-2 border-b border-[#1A1A1A] font-mono text-[9px] text-[#777]">
-                  <span>ARCHIVE CODE: 35MM-DW-002</span>
-                  <span className="text-[#C5A059]">OFFICIAL PREVIEW</span>
-                </div>
-
-                {/* Inner Film Poster Container */}
-                <div className="relative w-72 sm:w-84 h-[440px] sm:h-[500px] overflow-hidden border border-[#161616] bg-black">
-                  <img
-                    src={featuredMovie.posterUrl}
-                    alt={featuredMovie.title}
-                    className="w-full h-full object-cover filter contrast-[1.08] transition-transform duration-700 group-hover:scale-105"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-transparent to-transparent pointer-events-none" />
-
-                  {/* Play Button Overlay on Hover */}
-                  <div 
-                    onClick={() => onWatchTrailer(featuredMovie)}
-                    className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-black/40 cursor-pointer"
-                  >
-                    <div className="w-16 h-16 rounded-full border-2 border-[#C5A059] bg-black/70 flex items-center justify-center text-[#C5A059] transform group-hover:scale-110 transition-transform">
-                      <Play className="w-7 h-7 fill-current mr-0.5" />
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-3 right-3 left-3 text-right">
-                    <span className="block text-[10px] font-mono text-[#C5A059] uppercase tracking-wider">
-                      DIRECTED BY {featuredMovie.director?.toUpperCase()}
-                    </span>
-                    <span className="block text-base font-cinzel text-white font-bold truncate">
-                      {featuredMovie.title}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Vintage Bottom Plate */}
-                <div className="flex items-center justify-between px-2 pt-2 mt-2 border-t border-[#1A1A1A] font-mono text-[9px] text-[#555]">
-                  <span>WARNER BROS. PICTURES / LEGENDARY</span>
-                  <span>PRESTIGE ARCHIVE</span>
-                </div>
-
+          {/* Featured Poster Showcase */}
+          <div className="hidden lg:block lg:col-span-4">
+            <div className="relative group mx-auto max-w-[280px]">
+              <div className="rounded-xl overflow-hidden border border-[#222B3D] bg-[#131722] shadow-2xl transition-transform duration-300 group-hover:-translate-y-1">
+                <img
+                  src={featuredMovie.posterUrl}
+                  alt={featuredMovie.title}
+                  className="w-full aspect-[2/3] object-cover"
+                />
               </div>
-
             </div>
           </div>
 
         </div>
-
-        {/* Traditional Gazette Ledger / Footnote Stats */}
-        <div className="mt-16 pt-8 border-t border-[#161616] grid grid-cols-2 md:grid-cols-4 gap-6 text-right">
-          <div className="border-r border-[#1A1A1A] pr-4">
-            <span className="block font-cinzel text-3xl font-extrabold text-[#E2C378] tracking-wider">+150K</span>
-            <span className="text-xs text-[#7A7A72] font-serif">عضو ومتابع في النادي السينمائي</span>
-          </div>
-          <div className="border-r border-[#1A1A1A] pr-4">
-            <span className="block font-cinzel text-3xl font-extrabold text-[#F3F4F6] tracking-wider">+1,200</span>
-            <span className="text-xs text-[#7A7A72] font-serif">مقال ومراجعة سينمائية موثقة</span>
-          </div>
-          <div className="border-r border-[#1A1A1A] pr-4">
-            <span className="block font-cinzel text-3xl font-extrabold text-[#C5A059] tracking-wider">24 / 7</span>
-            <span className="text-xs text-[#7A7A72] font-serif">تغطية متواصلة للمهرجانات العالمية</span>
-          </div>
-          <div className="pr-4">
-            <span className="block font-cinzel text-3xl font-extrabold text-[#A1A19A] tracking-wider">4K MASTER</span>
-            <span className="text-xs text-[#7A7A72] font-serif">أعلى معايير الدقة للعروض الرسمية</span>
-          </div>
-        </div>
-
       </div>
     </section>
   );

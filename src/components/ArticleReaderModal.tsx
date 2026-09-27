@@ -10,10 +10,7 @@ import {
   Clock, 
   Share2, 
   Check, 
-  Maximize2, 
-  Minimize2,
-  Bookmark,
-  Sparkles
+  Bookmark
 } from 'lucide-react';
 import { NewsItem } from '../types';
 
@@ -32,9 +29,8 @@ export default function ArticleReaderModal({
   initialReadingMode = false, 
   onClose 
 }: ArticleReaderModalProps) {
-  // Reading Mode State
   const [isReadingMode, setIsReadingMode] = useState(initialReadingMode);
-  const [theme, setTheme] = useState<ReadingTheme>('sepia');
+  const [theme, setTheme] = useState<ReadingTheme>('charcoal');
   const [fontSize, setFontSize] = useState<FontSize>('lg');
   const [fontFamily, setFontFamily] = useState<FontFamily>('amiri');
   const [showImage, setShowImage] = useState(true);
@@ -44,12 +40,10 @@ export default function ArticleReaderModal({
 
   const contentRef = useRef<HTMLDivElement>(null);
 
-  // Sync initialReadingMode when article changes
   useEffect(() => {
     setIsReadingMode(initialReadingMode);
   }, [initialReadingMode, article]);
 
-  // Handle Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -60,7 +54,6 @@ export default function ArticleReaderModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
-  // Track scroll progress for reading indicator
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.currentTarget;
     const totalHeight = target.scrollHeight - target.clientHeight;
@@ -72,12 +65,10 @@ export default function ArticleReaderModal({
 
   if (!article) return null;
 
-  // Calculate estimated reading time & word count
   const allText = `${article.title} ${article.summary} ${article.content || ''}`;
   const wordCount = allText.trim().split(/\s+/).length;
   const readingTimeMinutes = Math.max(1, Math.ceil(wordCount / 180));
 
-  // Font size classes
   const fontSizes: Record<FontSize, { body: string; title: string; summary: string }> = {
     sm: { body: 'text-base leading-[2.1]', title: 'text-2xl', summary: 'text-base leading-[2.0]' },
     md: { body: 'text-lg leading-[2.2]', title: 'text-3xl', summary: 'text-lg leading-[2.1]' },
@@ -85,28 +76,27 @@ export default function ArticleReaderModal({
     xl: { body: 'text-2xl leading-[2.4]', title: 'text-4xl sm:text-5xl', summary: 'text-2xl leading-[2.3]' }
   };
 
-  // Color themes
   const themeStyles: Record<ReadingTheme, { bg: string; text: string; kicker: string; cardBg: string; border: string }> = {
     sepia: {
-      bg: 'bg-[#181512]',
+      bg: 'bg-[#1C1917]',
       text: 'text-[#F5EBD7]',
-      kicker: 'text-[#D4AF37]',
-      cardBg: 'bg-[#211C18]',
-      border: 'border-[#332A22]'
+      kicker: 'text-[#E50914]',
+      cardBg: 'bg-[#292524]',
+      border: 'border-[#3D3733]'
     },
     charcoal: {
-      bg: 'bg-[#121212]',
-      text: 'text-[#DCDCD6]',
-      kicker: 'text-[#C5A059]',
-      cardBg: 'bg-[#1A1A1A]',
-      border: 'border-[#262626]'
+      bg: 'bg-[#0E121A]',
+      text: 'text-[#E2E8F0]',
+      kicker: 'text-[#E50914]',
+      cardBg: 'bg-[#141A26]',
+      border: 'border-[#1F2636]'
     },
     oled: {
-      bg: 'bg-[#040404]',
-      text: 'text-[#E5E5E0]',
-      kicker: 'text-[#C5A059]',
-      cardBg: 'bg-[#0D0D0D]',
-      border: 'border-[#1C1C1C]'
+      bg: 'bg-[#000000]',
+      text: 'text-[#F8FAFC]',
+      kicker: 'text-[#E50914]',
+      cardBg: 'bg-[#0A0A0A]',
+      border: 'border-[#1E1E1E]'
     }
   };
 
@@ -140,14 +130,14 @@ export default function ArticleReaderModal({
 
   return (
     <div 
-      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/95 backdrop-blur-md animate-fadeIn"
+      className="fixed inset-0 z-50 flex items-center justify-center p-0 sm:p-4 bg-black/90 backdrop-blur-md animate-fadeIn"
       onClick={onClose}
     >
       {/* Scroll Progress Bar at the Top */}
       {isReadingMode && (
-        <div className="fixed top-0 inset-x-0 z-50 h-1 bg-[#1A1A1A]">
+        <div className="fixed top-0 inset-x-0 z-50 h-1 bg-[#1E2536]">
           <div 
-            className="h-full bg-gradient-to-r from-[#C5A059] to-[#E2C378] transition-all duration-150"
+            className="h-full bg-[#E50914] transition-all duration-150"
             style={{ width: `${scrollProgress}%` }}
           />
         </div>
@@ -155,38 +145,37 @@ export default function ArticleReaderModal({
 
       {/* Main Container */}
       <div 
-        className={`relative w-full h-full sm:h-auto sm:max-h-[92vh] flex flex-col text-right transition-all duration-500 overflow-hidden shadow-2xl ${
+        className={`relative w-full h-full sm:h-auto sm:max-h-[92vh] flex flex-col text-right transition-all duration-300 overflow-hidden shadow-2xl rounded-none sm:rounded-2xl ${
           isReadingMode 
             ? `${currentTheme.bg} max-w-4xl border-0 sm:border ${currentTheme.border}` 
-            : 'bg-[#0E0E0E] max-w-2xl border border-[#262626]'
+            : 'bg-[#10141E] max-w-2xl border border-[#1E2536]'
         }`}
         onClick={(e) => e.stopPropagation()}
       >
         
         {/* Top Control Bar */}
         <div className={`flex flex-wrap items-center justify-between p-3.5 sm:p-4 border-b transition-colors ${
-          isReadingMode ? `${currentTheme.cardBg} ${currentTheme.border}` : 'bg-[#080808] border-[#1C1C1C]'
+          isReadingMode ? `${currentTheme.cardBg} ${currentTheme.border}` : 'bg-[#0C1018] border-[#1E2536]'
         }`}>
           
           {/* Mode Switch & Reading Info */}
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsReadingMode(!isReadingMode)}
-              className={`flex items-center gap-2 px-3 py-1.5 text-xs font-mono tracking-wider transition-all duration-300 border ${
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                 isReadingMode 
-                  ? 'bg-[#C5A059] border-[#C5A059] text-black font-bold shadow-[0_0_15px_rgba(197,160,89,0.3)]' 
-                  : 'bg-[#141414] hover:bg-[#1A1A1A] border-[#2A2A2A] hover:border-[#C5A059] text-[#C5A059]'
+                  ? 'bg-[#E50914] text-white font-semibold shadow-sm' 
+                  : 'bg-[#151A26] hover:bg-[#1E2536] text-[#CBD5E1] border border-[#222B3D]'
               }`}
-              title="التبديل إلى وضع القراءة المريح للعين"
             >
               <BookOpen className="w-3.5 h-3.5" />
               <span>{isReadingMode ? 'وضع القراءة نشط' : 'تفعيل وضع القراءة'}</span>
             </button>
 
             {isReadingMode && (
-              <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#888880]">
-                <Clock className="w-3 h-3 text-[#C5A059]" />
-                <span>{readingTimeMinutes} دقيقة قراءة ({wordCount} كلمة)</span>
+              <div className="hidden sm:flex items-center gap-2 text-xs text-[#94A3B8]">
+                <Clock className="w-3.5 h-3.5 text-[#64748B]" />
+                <span>{readingTimeMinutes} دقائق قراءة ({wordCount} كلمة)</span>
               </div>
             )}
           </div>
@@ -196,23 +185,23 @@ export default function ArticleReaderModal({
             <div className="flex items-center gap-1.5 sm:gap-2">
               
               {/* Font Size Adjusters */}
-              <div className="flex items-center border border-[#333] bg-black/40 px-1 py-0.5">
+              <div className="flex items-center rounded-lg border border-[#263145] bg-[#0E121A] px-1 py-0.5">
                 <button
                   onClick={handleDecreaseFont}
                   disabled={fontSize === 'sm'}
-                  className="p-1.5 text-[#AAA] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="تصغير حجم الخط (A-)"
+                  className="p-1.5 text-[#94A3B8] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="تصغير الخط"
                 >
                   <ZoomOut className="w-3.5 h-3.5" />
                 </button>
-                <span className="px-1.5 text-[11px] font-mono text-[#C5A059] font-bold">
+                <span className="px-1.5 text-[11px] text-white font-medium">
                   {fontSize === 'sm' ? 'صغير' : fontSize === 'md' ? 'متوسط' : fontSize === 'lg' ? 'كبير' : 'أكبر'}
                 </span>
                 <button
                   onClick={handleIncreaseFont}
                   disabled={fontSize === 'xl'}
-                  className="p-1.5 text-[#AAA] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                  title="تكبير حجم الخط (A+)"
+                  className="p-1.5 text-[#94A3B8] hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  title="تكبير الخط"
                 >
                   <ZoomIn className="w-3.5 h-3.5" />
                 </button>
@@ -221,35 +210,34 @@ export default function ArticleReaderModal({
               {/* Font Family Switcher */}
               <button
                 onClick={() => setFontFamily(fontFamily === 'amiri' ? 'cairo' : 'amiri')}
-                className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 border border-[#333] bg-black/40 text-xs font-serif text-[#CCC] hover:text-[#C5A059] hover:border-[#C5A059] transition-colors"
-                title="تغيير نوع الخط"
+                className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-[#263145] bg-[#0E121A] text-xs text-[#CBD5E1] hover:text-white transition-colors"
               >
-                <Type className="w-3.5 h-3.5 text-[#C5A059]" />
+                <Type className="w-3.5 h-3.5 text-[#E50914]" />
                 <span>{fontFamily === 'amiri' ? 'خط أميري' : 'خط القاهرة'}</span>
               </button>
 
               {/* Themes Selector */}
-              <div className="flex items-center gap-1 border border-[#333] bg-black/40 p-1">
+              <div className="flex items-center gap-1.5 rounded-lg border border-[#263145] bg-[#0E121A] p-1">
                 <button
                   onClick={() => setTheme('sepia')}
-                  className={`w-5 h-5 rounded-sm bg-[#1E1914] border transition-transform ${
-                    theme === 'sepia' ? 'border-[#D4AF37] scale-110 shadow-sm' : 'border-[#333]'
+                  className={`w-5 h-5 rounded-full bg-[#292524] border transition-transform ${
+                    theme === 'sepia' ? 'border-[#E50914] scale-110 ring-1 ring-[#E50914]' : 'border-[#444]'
                   }`}
-                  title="سمة ورق دافئ (سيپيا)"
+                  title="سمة ورق دافئ"
                 />
                 <button
                   onClick={() => setTheme('charcoal')}
-                  className={`w-5 h-5 rounded-sm bg-[#181818] border transition-transform ${
-                    theme === 'charcoal' ? 'border-[#C5A059] scale-110 shadow-sm' : 'border-[#333]'
+                  className={`w-5 h-5 rounded-full bg-[#141A26] border transition-transform ${
+                    theme === 'charcoal' ? 'border-[#E50914] scale-110 ring-1 ring-[#E50914]' : 'border-[#444]'
                   }`}
-                  title="سمة فحمي هادئ"
+                  title="سمة داكن مريح"
                 />
                 <button
                   onClick={() => setTheme('oled')}
-                  className={`w-5 h-5 rounded-sm bg-[#000000] border transition-transform ${
-                    theme === 'oled' ? 'border-[#C5A059] scale-110 shadow-sm' : 'border-[#333]'
+                  className={`w-5 h-5 rounded-full bg-[#000000] border transition-transform ${
+                    theme === 'oled' ? 'border-[#E50914] scale-110 ring-1 ring-[#E50914]' : 'border-[#444]'
                   }`}
-                  title="سمة سواد عميق (OLED)"
+                  title="سمة سواد عميق"
                 />
               </div>
 
@@ -257,8 +245,8 @@ export default function ArticleReaderModal({
               {article.imageUrl && (
                 <button
                   onClick={() => setShowImage(!showImage)}
-                  className="p-1.5 border border-[#333] bg-black/40 text-[#AAA] hover:text-[#C5A059] hover:border-[#C5A059] transition-colors"
-                  title={showImage ? 'إخفاء الصورة للتركيز على النص' : 'إظهار صورة الغلاف'}
+                  className="p-1.5 rounded-lg border border-[#263145] bg-[#0E121A] text-[#94A3B8] hover:text-white transition-colors"
+                  title={showImage ? 'إخفاء الصورة للتركيز' : 'إظهار الصورة'}
                 >
                   {showImage ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
@@ -267,20 +255,20 @@ export default function ArticleReaderModal({
               {/* Close Button */}
               <button
                 onClick={onClose}
-                className="p-1.5 text-[#888] hover:text-white hover:border-[#C5A059] border border-transparent transition-colors mr-1"
+                className="p-1.5 text-[#94A3B8] hover:text-white transition-colors mr-1"
                 aria-label="إغلاق"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-mono text-[#C5A059]">
-                {article.category} • {article.date}
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-[#94A3B8]">
+                {article.category} · {article.date}
               </span>
               <button
                 onClick={onClose}
-                className="p-1 text-[#888] hover:text-white transition-colors"
+                className="p-1.5 text-[#94A3B8] hover:text-white transition-colors"
                 aria-label="إغلاق"
               >
                 <X className="w-5 h-5" />
@@ -296,24 +284,23 @@ export default function ArticleReaderModal({
           onScroll={handleScroll}
           className="overflow-y-auto flex-1 p-5 sm:p-10 md:p-12 space-y-6"
         >
-          {/* Article Measure Wrapper */}
           <div className={`mx-auto ${isReadingMode ? 'max-w-2xl' : 'max-w-xl'} space-y-6`}>
             
-            {/* Reading Mode Header Header */}
+            {/* Header */}
             {isReadingMode ? (
-              <div className="space-y-4 pb-6 border-b border-dashed border-[#333]/60">
-                <div className="flex items-center justify-between text-xs font-mono">
-                  <span className={`px-2.5 py-1 ${currentTheme.cardBg} ${currentTheme.kicker} border ${currentTheme.border}`}>
+              <div className="space-y-4 pb-6 border-b border-[#263145]">
+                <div className="flex items-center justify-between text-xs text-[#94A3B8]">
+                  <span className={`px-2 py-0.5 rounded ${currentTheme.cardBg} font-medium`}>
                     {article.category}
                   </span>
-                  <div className="flex items-center gap-3 text-[#888]">
+                  <div className="flex items-center gap-2">
                     <span>{article.date}</span>
-                    <span>•</span>
-                    <span>المصدر: {article.source || 'Cinema World Archive'}</span>
+                    <span>·</span>
+                    <span>المصدر: {article.source || 'سينما وورلد'}</span>
                   </div>
                 </div>
 
-                <h1 className={`font-bold tracking-normal leading-[1.3] ${fontSizes[fontSize].title} ${
+                <h1 className={`font-bold leading-[1.3] ${fontSizes[fontSize].title} ${
                   fontFamily === 'amiri' ? 'font-amiri font-bold' : 'font-sans'
                 } ${currentTheme.text}`}>
                   {article.title}
@@ -321,7 +308,7 @@ export default function ArticleReaderModal({
               </div>
             ) : (
               <div>
-                <h1 className="text-xl sm:text-2xl font-serif font-bold text-white leading-relaxed mb-3">
+                <h1 className="text-xl sm:text-2xl font-bold text-white leading-relaxed mb-3">
                   {article.title}
                 </h1>
               </div>
@@ -329,26 +316,24 @@ export default function ArticleReaderModal({
 
             {/* Optional Cover Image */}
             {article.imageUrl && (!isReadingMode || showImage) && (
-              <div className={`overflow-hidden border transition-all duration-500 ${
-                isReadingMode 
-                  ? `my-6 max-h-96 ${currentTheme.border} shadow-lg` 
-                  : 'h-56 sm:h-72 border-[#202020] bg-black'
+              <div className={`overflow-hidden rounded-xl border border-[#202738] ${
+                isReadingMode ? 'my-6 max-h-96' : 'h-56 sm:h-72'
               }`}>
                 <img
                   src={article.imageUrl}
                   alt={article.title}
-                  className="w-full h-full object-cover filter contrast-[1.05]"
+                  className="w-full h-full object-cover"
                 />
               </div>
             )}
 
             {/* Lead Summary Paragraph */}
-            <div className={`p-4 sm:p-5 transition-colors border-r-4 ${
+            <div className={`p-4 sm:p-5 rounded-xl border ${
               isReadingMode 
-                ? `${currentTheme.cardBg} border-r-[#C5A059] border-y border-l ${currentTheme.border} ${currentTheme.text}` 
-                : 'bg-[#0A0A0A] border-r-[#C5A059] border border-[#1C1C1C] text-xs text-[#CCC]'
+                ? `${currentTheme.cardBg} border-r-4 border-r-[#E50914] ${currentTheme.border} ${currentTheme.text}` 
+                : 'bg-[#141A26] border-r-4 border-r-[#E50914] border-[#1E2536] text-xs text-[#CBD5E1]'
             } italic leading-relaxed ${fontSizes[fontSize].summary} ${
-              fontFamily === 'amiri' ? 'font-amiri' : 'font-serif'
+              fontFamily === 'amiri' ? 'font-amiri' : 'font-sans'
             }`}>
               {article.summary}
             </div>
@@ -357,7 +342,7 @@ export default function ArticleReaderModal({
             {article.content && (
               <div className={`space-y-6 pt-2 ${fontSizes[fontSize].body} ${
                 fontFamily === 'amiri' ? 'font-amiri' : 'font-sans'
-              } ${isReadingMode ? currentTheme.text : 'text-[#B5B5AF] text-sm'}`}>
+              } ${isReadingMode ? currentTheme.text : 'text-[#94A3B8] text-sm'}`}>
                 {article.content.split('\n\n').map((paragraph, idx) => (
                   <p key={idx} className="text-justify leading-relaxed">
                     {paragraph}
@@ -366,22 +351,19 @@ export default function ArticleReaderModal({
               </div>
             )}
 
-            {/* Reading Mode Bottom Actions */}
-            <div className={`mt-10 pt-6 border-t flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-mono ${
-              isReadingMode ? `${currentTheme.border} text-[#888]` : 'border-[#1C1C1C] text-[#777]'
-            }`}>
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-[#C5A059]" />
-                <span>تم النشر والتوثيق عبر مجلة سينما وورلد الأرشيفية</span>
+            {/* Bottom Actions */}
+            <div className="mt-8 pt-6 border-t border-[#202738] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#94A3B8]">
+              <div>
+                نُشر عبر منصة سينما وورلد الرسمية
               </div>
 
               <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
                 <button
                   onClick={() => setIsSaved(!isSaved)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 border transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors ${
                     isSaved 
-                      ? 'bg-[#C5A059] border-[#C5A059] text-black font-bold' 
-                      : 'border-[#333] hover:border-[#C5A059] text-zinc-300'
+                      ? 'bg-[#E50914] border-[#E50914] text-white font-semibold' 
+                      : 'border-[#263145] bg-[#141A26] text-[#CBD5E1] hover:text-white'
                   }`}
                 >
                   <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}`} />
@@ -390,7 +372,7 @@ export default function ArticleReaderModal({
 
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-1.5 px-3 py-1.5 border border-[#333] hover:border-[#C5A059] text-zinc-300 hover:text-white transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#263145] bg-[#141A26] text-[#CBD5E1] hover:text-white transition-colors"
                 >
                   {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
                   <span>{copied ? 'تم نسخ الرابط' : 'مشاركة'}</span>
@@ -400,15 +382,6 @@ export default function ArticleReaderModal({
 
           </div>
         </div>
-
-        {/* Reading Mode Exit Footbar */}
-        {isReadingMode && (
-          <div className={`p-2.5 border-t text-center text-xs font-mono ${currentTheme.cardBg} ${currentTheme.border} text-[#888]`}>
-            <span>أنت في وضع القراءة المريح للعين · انقر مفتاح </span>
-            <kbd className="px-1.5 py-0.5 bg-black/60 border border-[#444] text-[#C5A059] rounded text-[10px]">Esc</kbd>
-            <span> أو زر الإغلاق للعودة إلى الواجهة</span>
-          </div>
-        )}
 
       </div>
     </div>
