@@ -40,8 +40,7 @@ export function subscribeToMovies(callback: (movies: Movie[]) => void) {
       }
     },
     (err) => {
-      console.warn('Falling back to local movies data due to Firestore error:', err);
-      handleFirestoreError(err, OperationType.LIST, MOVIES_COLLECTION);
+      console.warn('Falling back to local movies data due to Firestore listener notice:', err?.message || err);
       callback(MOVIES_DATA);
     }
   );
@@ -103,8 +102,7 @@ export function subscribeToNews(callback: (news: NewsItem[]) => void) {
       }
     },
     (err) => {
-      console.warn('Falling back to local news data due to Firestore error:', err);
-      handleFirestoreError(err, OperationType.LIST, NEWS_COLLECTION);
+      console.warn('Falling back to local news data due to Firestore listener notice:', err?.message || err);
       callback(NEWS_DATA);
     }
   );

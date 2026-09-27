@@ -29,17 +29,17 @@ export default function CuratedRecommendations({
     return movies.filter((movie) => {
       const q = searchQuery.toLowerCase();
       const matchesSearch = 
-        movie.title.toLowerCase().includes(q) ||
+        (movie.title && movie.title.toLowerCase().includes(q)) ||
         (movie.originalTitle && movie.originalTitle.toLowerCase().includes(q)) ||
         (movie.director && movie.director.toLowerCase().includes(q)) ||
-        movie.synopsis.toLowerCase().includes(q) ||
-        movie.genre.some(g => g.toLowerCase().includes(q));
+        (movie.synopsis && movie.synopsis.toLowerCase().includes(q)) ||
+        (Array.isArray(movie.genre) && movie.genre.some(g => g.toLowerCase().includes(q)));
       
       let matchesGenre = true;
       if (selectedGenre === 'Watchlist') {
         matchesGenre = isBookmarked(movie.id);
       } else if (selectedGenre !== 'All') {
-        matchesGenre = movie.genre.includes(selectedGenre);
+        matchesGenre = Array.isArray(movie.genre) && movie.genre.includes(selectedGenre);
       }
 
       return matchesSearch && matchesGenre;

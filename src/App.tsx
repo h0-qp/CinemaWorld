@@ -66,7 +66,9 @@ export default function App() {
   };
 
   // Featured movie for Hero
-  const featuredMovie = movies.find(m => m.id === 'dune-2') || movies[0];
+  const featuredMovie = (movies && movies.length > 0) 
+    ? (movies.find(m => m.id === 'dune-2') || movies[0]) 
+    : MOVIES_DATA[0];
 
   // Upcoming movies for Release Radar
   const upcomingMovies = movies.filter(m => m.isUpcoming);

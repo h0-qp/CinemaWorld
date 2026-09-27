@@ -77,7 +77,7 @@ export default function MovieCard({ movie, onWatchTrailer }: MovieCardProps) {
         <div>
           {/* Genre Trail */}
           <div className="text-[11px] font-medium text-[#94A3B8] mb-1 truncate">
-            {movie.genre.join(' · ')}
+            {Array.isArray(movie.genre) ? movie.genre.join(' · ') : ''}
           </div>
 
           {/* Title */}
