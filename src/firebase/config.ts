@@ -73,9 +73,24 @@ export const loginWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
-  } catch (error) {
-    console.error("Google login failed:", error);
-    throw error;
+  } catch (error: unknown) {
+    const firebaseError = error as { code?: string; message?: string };
+    // Gracefully handle normal user cancellation without logging fatal error or crashing
+    if (
+      firebaseError?.code === 'auth/popup-closed-by-user' ||
+      firebaseError?.code === 'auth/cancelled-popup-request' ||
+      firebaseError?.message?.includes('popup-closed-by-user') ||
+      firebaseError?.message?.includes('cancelled-popup-request')
+    ) {
+      console.info("Google sign-in popup was closed by user.");
+      return null;
+    }
+    if (firebaseError?.code === 'auth/popup-blocked' || firebaseError?.message?.includes('popup-blocked')) {
+      console.warn("Google sign-in popup was blocked by browser.");
+      return null;
+    }
+    console.error("Google login failed:", firebaseError?.message || error);
+    return null;
   }
 };
 

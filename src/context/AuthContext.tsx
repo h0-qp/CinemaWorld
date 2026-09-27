@@ -78,12 +78,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   const toggleWatchlist = async (movie: Movie) => {
-    if (!user) {
-      await loginWithGoogle();
-      return;
+    let currentUser = user;
+    if (!currentUser) {
+      currentUser = await loginWithGoogle();
+      if (!currentUser) return;
     }
 
-    const movieDocPath = `users/${user.uid}/watchlist/${movie.id}`;
+    const movieDocPath = `users/${currentUser.uid}/watchlist/${movie.id}`;
     const alreadySaved = watchlist.includes(movie.id);
 
     try {
@@ -109,7 +110,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async () => {
-    await loginWithGoogle();
+    try {
+      await loginWithGoogle();
+    } catch {
+      // Handled gracefully in loginWithGoogle
+    }
   };
 
   const signOut = async () => {
