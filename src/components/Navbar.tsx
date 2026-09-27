@@ -15,9 +15,9 @@ export default function Navbar({ activeSection, setActiveSection, onSelectWatchl
 
   const navItems = [
     { id: 'hero', label: 'الرئيسية', icon: Film },
-    { id: 'radar', label: 'رادار الإصدارات', icon: Radio },
-    { id: 'recommendations', label: 'ترشيحات الأفلام', icon: Compass },
     { id: 'news', label: 'الأخبار والتقارير', icon: Newspaper },
+    { id: 'recommendations', label: 'ترشيحات الأفلام', icon: Compass },
+    { id: 'radar', label: 'رادار الإصدارات', icon: Radio },
     { id: 'auteurs', label: 'كبار المخرجين', icon: Clapperboard },
   ];
 

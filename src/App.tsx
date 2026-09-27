@@ -114,11 +114,10 @@ export default function App() {
             onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
           />
 
-          <ReleaseRadar
-            upcomingMovies={upcomingMovies}
-            onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
-          />
+          {/* Real-time Editorial News Section FIRST */}
+          <NewsSection news={news} />
 
+          {/* Curated Movie Recommendations SECOND */}
           <CuratedRecommendations
             movies={movies}
             onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
@@ -128,8 +127,11 @@ export default function App() {
             setSearchQuery={setSearchQuery}
           />
 
-          {/* Real-time Editorial News Section */}
-          <NewsSection news={news} />
+          {/* Release Radar & Theatrical Calendar */}
+          <ReleaseRadar
+            upcomingMovies={upcomingMovies}
+            onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
+          />
 
           <DirectorsSection />
         </main>
