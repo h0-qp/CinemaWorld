@@ -10,7 +10,6 @@ import {
   ExternalLink, 
   LogOut, 
   CheckCircle2, 
-  Database,
   Radio,
   Clock,
   Star
@@ -70,7 +69,7 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username.trim() === 'admin' && password === 'admin123') {
+    if (username.trim() === 'admin' && password === 'hussein@hussein') {
       setIsAuthenticated(true);
       sessionStorage.setItem('cinemaworld_admin_auth', 'true');
       setLoginError('');
@@ -222,16 +221,6 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
             </p>
           </div>
 
-          {/* Simple Credentials Note for the User */}
-          <div className="mb-6 p-3 rounded-lg bg-[#0E121A] border border-[#1E2536] text-xs text-[#94A3B8] space-y-1">
-            <div className="font-semibold text-white flex items-center gap-1.5">
-              <Database className="w-3.5 h-3.5 text-[#E50914]" />
-              <span>بيانات الدخول الافتراضية:</span>
-            </div>
-            <div>اسم المستخدم: <span className="text-white font-mono font-bold">admin</span></div>
-            <div>كلمة المرور: <span className="text-white font-mono font-bold">admin123</span></div>
-          </div>
-
           {loginError && (
             <div className="mb-4 p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs">
               {loginError}
@@ -245,7 +234,7 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
+                placeholder="أدخل اسم المستخدم"
                 className="w-full px-3.5 py-2.5 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white text-xs focus:outline-none focus:border-[#E50914]"
                 required
               />

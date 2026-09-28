@@ -87,6 +87,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const movieDocPath = `users/${currentUser.uid}/watchlist/${movie.id}`;
     const alreadySaved = watchlist.includes(movie.id);
 
+    // Optimistic UI update
+    setWatchlist(prev => alreadySaved ? prev.filter(id => id !== movie.id) : [...prev, movie.id]);
+
     try {
       if (alreadySaved) {
         await deleteDoc(doc(db, movieDocPath));

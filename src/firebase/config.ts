@@ -37,8 +37,19 @@ export interface FirestoreErrorInfo {
 }
 
 export function handleFirestoreError(error: unknown, operationType: OperationType, path: string | null) {
+  const errorMessage = error instanceof Error ? error.message : String(error);
+  const errorCode = (error as any)?.code || '';
+
+  const isNetworkOrOffline = 
+    errorCode === 'unavailable' ||
+    errorCode === 'failed-precondition' ||
+    errorMessage.includes('unavailable') ||
+    errorMessage.includes('offline') ||
+    errorMessage.includes('Could not reach Cloud Firestore backend') ||
+    errorMessage.includes('network');
+
   const errInfo: FirestoreErrorInfo = {
-    error: error instanceof Error ? error.message : String(error),
+    error: errorMessage,
     authInfo: {
       userId: auth.currentUser?.uid,
       email: auth.currentUser?.email,
@@ -53,6 +64,12 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
     operationType,
     path
   };
+
+  if (isNetworkOrOffline) {
+    console.warn('Firestore offline / network status (operating in local fallback mode):', JSON.stringify(errInfo));
+    return;
+  }
+
   console.error('Firestore Error: ', JSON.stringify(errInfo));
   throw new Error(JSON.stringify(errInfo));
 }
@@ -61,9 +78,12 @@ export function handleFirestoreError(error: unknown, operationType: OperationTyp
 async function testConnection() {
   try {
     await getDocFromServer(doc(db, 'test', 'connection'));
-  } catch (error) {
-    if (error instanceof Error && error.message.includes('the client is offline')) {
-      console.warn("Firestore client is offline or network error:", error.message);
+  } catch (error: any) {
+    const msg = error instanceof Error ? error.message : String(error);
+    if (error?.code === 'unavailable' || msg.includes('offline') || msg.includes('unavailable') || msg.includes('Could not reach')) {
+      console.warn("Firestore client is offline or network error:", msg);
+    } else {
+      console.warn("Firestore connection check note:", msg);
     }
   }
 }
