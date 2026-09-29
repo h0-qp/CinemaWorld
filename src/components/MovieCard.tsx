@@ -1,6 +1,7 @@
-import { Star, Play, Clock, Bookmark } from 'lucide-react';
+import { Star, Play, Clock, Bookmark, Share2 } from 'lucide-react';
 import { Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { shareContent } from '../utils/shareUtils';
 
 interface MovieCardProps {
   movie: Movie;
@@ -36,21 +37,40 @@ export default function MovieCard({ movie, onWatchTrailer }: MovieCardProps) {
         {/* Subtle Vignette Gradient */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#121622] via-transparent to-black/40 opacity-80 group-hover:opacity-60 transition-opacity" />
 
-        {/* Top Controls: Bookmark & Rating */}
+        {/* Top Controls: Bookmark, Share & Rating */}
         <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between pointer-events-none">
-          {/* Watchlist Toggle */}
-          <button
-            onClick={handleBookmarkClick}
-            className={`pointer-events-auto p-1.5 rounded-md backdrop-blur-md transition-colors ${
-              bookmarked
-                ? 'bg-[#E50914] text-white'
-                : 'bg-black/60 hover:bg-black/80 text-white/80 hover:text-white border border-white/10'
-            }`}
-            title={bookmarked ? 'إزالة من قائمتي' : 'إضافة إلى قائمتي'}
-            aria-label="قائمتي"
-          >
-            <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
-          </button>
+          {/* Watchlist & Share Group */}
+          <div className="flex items-center gap-1.5 pointer-events-auto">
+            <button
+              onClick={handleBookmarkClick}
+              className={`p-1.5 rounded-md backdrop-blur-md transition-colors ${
+                bookmarked
+                  ? 'bg-[#E50914] text-white'
+                  : 'bg-black/60 hover:bg-black/80 text-white/80 hover:text-white border border-white/10'
+              }`}
+              title={bookmarked ? 'إزالة من قائمتي' : 'إضافة إلى قائمتي'}
+              aria-label="قائمتي"
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${bookmarked ? 'fill-current' : ''}`} />
+            </button>
+
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                shareContent({
+                  title: movie.title,
+                  text: movie.synopsis,
+                  type: 'movie',
+                  id: movie.id
+                });
+              }}
+              className="p-1.5 rounded-md backdrop-blur-md bg-black/60 hover:bg-black/80 text-white/80 hover:text-white border border-white/10 transition-colors"
+              title="مشاركة رابط هذا العمل"
+              aria-label="مشاركة"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+            </button>
+          </div>
 
           {/* Rating */}
           <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-md border border-white/10 text-white text-xs font-semibold">

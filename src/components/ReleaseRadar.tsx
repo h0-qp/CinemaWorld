@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Calendar, Play, Clock } from 'lucide-react';
+import { Calendar, Play, Clock, Share2 } from 'lucide-react';
 import { Movie } from '../types';
+import { shareContent } from '../utils/shareUtils';
 
 interface ReleaseRadarProps {
   upcomingMovies: Movie[];
@@ -165,14 +166,30 @@ function TheatricalCountdownCard({ movie, onWatchTrailer }: TheatricalCardProps)
           )}
         </div>
 
-        {/* Trailer Button */}
-        <button
-          onClick={() => onWatchTrailer(movie)}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#181F2E] hover:bg-[#E50914] text-white text-xs font-semibold transition-colors duration-200"
-        >
-          <Play className="w-3.5 h-3.5 fill-current" />
-          <span>مشاهدة التريلر الترويجي</span>
-        </button>
+        {/* Trailer & Share Buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => onWatchTrailer(movie)}
+            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-[#181F2E] hover:bg-[#E50914] text-white text-xs font-semibold transition-colors duration-200"
+          >
+            <Play className="w-3.5 h-3.5 fill-current" />
+            <span>مشاهدة التريلر</span>
+          </button>
+
+          <button
+            onClick={() => shareContent({
+              title: movie.title,
+              text: movie.synopsis,
+              type: 'movie',
+              id: movie.id
+            })}
+            className="p-2.5 rounded-lg bg-[#181F2E] hover:bg-[#1E2536] text-[#CBD5E1] hover:text-white border border-[#202738] transition-colors"
+            title="مشاركة موعد ورابط الفيلم"
+            aria-label="مشاركة الفيلم"
+          >
+            <Share2 className="w-4 h-4 text-[#E50914]" />
+          </button>
+        </div>
 
       </div>
 

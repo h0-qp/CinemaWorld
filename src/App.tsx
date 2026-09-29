@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MOVIES_DATA, NEWS_DATA } from './data/mockData';
-import { Movie, NewsItem, GenreFilter } from './types';
+import { Movie, NewsItem, GenreFilter, AdSettings } from './types';
+import { DEFAULT_AD_SETTINGS } from './data/defaultAds';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import ReleaseRadar from './components/ReleaseRadar';
@@ -10,8 +11,10 @@ import DirectorsSection from './components/DirectorsSection';
 import MovieModal from './components/MovieModal';
 import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
+import AdBanner from './components/AdBanner';
+import ShareToast from './components/ShareToast';
 import { AuthProvider } from './context/AuthContext';
-import { subscribeToMovies, subscribeToNews } from './firebase/contentService';
+import { subscribeToMovies, subscribeToNews, subscribeToAdSettings } from './firebase/contentService';
 
 export default function App() {
   const [isAdminView, setIsAdminView] = useState<boolean>(() => {
@@ -21,8 +24,10 @@ export default function App() {
 
   const [movies, setMovies] = useState<Movie[]>(MOVIES_DATA);
   const [news, setNews] = useState<NewsItem[]>(NEWS_DATA);
+  const [adSettings, setAdSettings] = useState<AdSettings>(DEFAULT_AD_SETTINGS);
 
   const [activeTrailerMovie, setActiveTrailerMovie] = useState<Movie | null>(null);
+  const [activeArticleId, setActiveArticleId] = useState<string | null>(null);
   const [activeSection, setActiveSection] = useState('hero');
   const [selectedGenre, setSelectedGenre] = useState<GenreFilter>('All');
   const [searchQuery, setSearchQuery] = useState('');
@@ -39,6 +44,30 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Deep-linking handler for ?movie=<id> & ?news=<id>
+  useEffect(() => {
+    const handleUrlDeepLinks = () => {
+      const params = new URLSearchParams(window.location.search);
+      const movieId = params.get('movie') || params.get('film');
+      const newsId = params.get('news') || params.get('article');
+
+      if (movieId && movies.length > 0) {
+        const found = movies.find(m => m.id === movieId);
+        if (found) {
+          setActiveTrailerMovie(found);
+        }
+      }
+
+      if (newsId && news.length > 0) {
+        setActiveArticleId(newsId);
+      }
+    };
+
+    handleUrlDeepLinks();
+    window.addEventListener('popstate', handleUrlDeepLinks);
+    return () => window.removeEventListener('popstate', handleUrlDeepLinks);
+  }, [movies, news]);
+
   // Real-time synchronization with Firebase Firestore
   useEffect(() => {
     const unsubMovies = subscribeToMovies((liveMovies) => {
@@ -49,9 +78,14 @@ export default function App() {
       setNews(liveNews);
     });
 
+    const unsubAds = subscribeToAdSettings((liveAds) => {
+      setAdSettings(liveAds);
+    });
+
     return () => {
       unsubMovies();
       unsubNews();
+      unsubAds();
     };
   }, []);
 
@@ -63,6 +97,21 @@ export default function App() {
   const closeAdminView = () => {
     setIsAdminView(false);
     window.history.pushState(null, '', '/');
+  };
+
+  const handleOpenMovieTrailer = (movie: Movie) => {
+    setActiveTrailerMovie(movie);
+    const url = new URL(window.location.href);
+    url.searchParams.set('movie', movie.id);
+    window.history.pushState(null, '', url.toString());
+  };
+
+  const handleCloseMovieTrailer = () => {
+    setActiveTrailerMovie(null);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('movie');
+    url.searchParams.delete('film');
+    window.history.pushState(null, '', url.toString());
   };
 
   // Featured movie for Hero
@@ -111,29 +160,45 @@ export default function App() {
         <main>
           <Hero
             featuredMovie={featuredMovie}
-            onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
+            onWatchTrailer={handleOpenMovieTrailer}
           />
 
           {/* Real-time Editorial News Section FIRST */}
-          <NewsSection news={news} />
+          <NewsSection 
+            news={news} 
+            activeArticleId={activeArticleId}
+            onClearActiveArticle={() => setActiveArticleId(null)}
+          />
+
+          {/* High-Impact Leaderboard / Header Sponsor */}
+          <AdBanner placement="header" settings={adSettings} />
 
           {/* Curated Movie Recommendations SECOND */}
           <CuratedRecommendations
             movies={movies}
-            onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
+            onWatchTrailer={handleOpenMovieTrailer}
             selectedGenre={selectedGenre}
             setSelectedGenre={setSelectedGenre}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
 
+          {/* In-Feed Native Cinema Sponsor */}
+          <AdBanner placement="feed" settings={adSettings} />
+
           {/* Release Radar & Theatrical Calendar */}
           <ReleaseRadar
             upcomingMovies={upcomingMovies}
-            onWatchTrailer={(movie) => setActiveTrailerMovie(movie)}
+            onWatchTrailer={handleOpenMovieTrailer}
           />
 
+          {/* Mid-Page Wide Theatrical Ad Banner */}
+          <AdBanner placement="mid" settings={adSettings} />
+
           <DirectorsSection />
+
+          {/* Pre-Footer Sponsor Banner */}
+          <AdBanner placement="footer" settings={adSettings} />
         </main>
 
         {/* Colophon & Footer */}
@@ -142,8 +207,11 @@ export default function App() {
         {/* Trailer Presentation Modal */}
         <MovieModal
           movie={activeTrailerMovie}
-          onClose={() => setActiveTrailerMovie(null)}
+          onClose={handleCloseMovieTrailer}
         />
+
+        {/* Global Toast for Link Sharing */}
+        <ShareToast />
 
       </div>
     </AuthProvider>

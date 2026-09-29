@@ -1,6 +1,7 @@
-import { Star, Play, Bookmark, Clock, Sparkles } from 'lucide-react';
+import { Star, Play, Bookmark, Clock, Sparkles, Share2 } from 'lucide-react';
 import { Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { shareContent } from '../utils/shareUtils';
 
 interface HeroProps {
   featuredMovie: Movie;
@@ -96,6 +97,21 @@ export default function Hero({ featuredMovie, onWatchTrailer }: HeroProps) {
               >
                 <Bookmark className={`w-4 h-4 ${bookmarked ? 'fill-current' : ''}`} />
                 <span>{bookmarked ? 'في قائمتك المحفوظة' : 'حفظ في قائمتي'}</span>
+              </button>
+
+              <button
+                onClick={() => shareContent({
+                  title: featuredMovie.title,
+                  text: featuredMovie.synopsis,
+                  type: 'movie',
+                  id: featuredMovie.id
+                })}
+                className="flex items-center gap-2 px-4 py-3 rounded-lg border border-[#222B3D] bg-[#131722] hover:bg-[#1A2030] text-[#CBD5E1] hover:text-white text-sm font-medium transition-colors"
+                title="مشاركة رابط هذا العمل المميز"
+                aria-label="مشاركة"
+              >
+                <Share2 className="w-4 h-4 text-[#E50914]" />
+                <span className="hidden sm:inline">مشاركة</span>
               </button>
             </div>
 

@@ -6,11 +6,15 @@ import {
   onSnapshot
 } from 'firebase/firestore';
 import { db, handleFirestoreError, OperationType } from './config';
-import { Movie, NewsItem } from '../types';
+import { Movie, NewsItem, AdSettings } from '../types';
 import { MOVIES_DATA, NEWS_DATA } from '../data/mockData';
+import { DEFAULT_AD_SETTINGS } from '../data/defaultAds';
 
 const MOVIES_COLLECTION = 'movies';
 const NEWS_COLLECTION = 'news';
+const SETTINGS_COLLECTION = 'settings';
+const ADS_DOC_ID = 'ads';
+const ADS_LOCAL_KEY = 'cinemaworld_ad_settings';
 
 /**
  * Real-time subscription to movies collection with fallback
@@ -135,3 +139,69 @@ export async function removeNews(newsId: string): Promise<void> {
     handleFirestoreError(err, OperationType.DELETE, `news/${newsId}`);
   }
 }
+
+/**
+  * Subscribe to Ad Settings
+  */
+export function subscribeToAdSettings(callback: (settings: AdSettings) => void) {
+  // Check local cache first
+  try {
+    const cached = localStorage.getItem(ADS_LOCAL_KEY);
+    if (cached) {
+      callback(JSON.parse(cached));
+    } else {
+      callback(DEFAULT_AD_SETTINGS);
+    }
+  } catch {
+    callback(DEFAULT_AD_SETTINGS);
+  }
+
+  const docRef = doc(db, SETTINGS_COLLECTION, ADS_DOC_ID);
+  return onSnapshot(
+    docRef,
+    (snapshot) => {
+      if (snapshot.exists()) {
+        const data = snapshot.data() as AdSettings;
+        try {
+          localStorage.setItem(ADS_LOCAL_KEY, JSON.stringify(data));
+        } catch {}
+        callback(data);
+      } else {
+        // Doc doesn't exist yet in Firestore, use default
+        callback(DEFAULT_AD_SETTINGS);
+      }
+    },
+    (err) => {
+      console.warn('Ad settings listener notice (using fallback):', err?.message || err);
+      try {
+        const cached = localStorage.getItem(ADS_LOCAL_KEY);
+        callback(cached ? JSON.parse(cached) : DEFAULT_AD_SETTINGS);
+      } catch {
+        callback(DEFAULT_AD_SETTINGS);
+      }
+    }
+  );
+}
+
+/**
+ * Save Ad Settings
+ */
+export async function saveAdSettings(settings: AdSettings): Promise<void> {
+  const settingsToSave: AdSettings = {
+    ...settings,
+    updatedAt: new Date().toISOString()
+  };
+
+  // Immediate local cache
+  try {
+    localStorage.setItem(ADS_LOCAL_KEY, JSON.stringify(settingsToSave));
+  } catch {}
+
+  const docRef = doc(db, SETTINGS_COLLECTION, ADS_DOC_ID);
+  try {
+    await setDoc(docRef, settingsToSave, { merge: true });
+  } catch (err) {
+    handleFirestoreError(err, OperationType.WRITE, `settings/${ADS_DOC_ID}`);
+  }
+}
+

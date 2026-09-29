@@ -82,6 +82,12 @@ service cloud.firestore {
       allow create, update, delete: if true;
     }
 
+    // Site settings collection (ads, features)
+    match /settings/{settingId} {
+      allow get, list: if true;
+      allow create, update, delete: if true;
+    }
+
     // Connection testing
     match /test/{docId} {
       allow read: if true;

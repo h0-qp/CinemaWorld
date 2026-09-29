@@ -1,27 +1,54 @@
-import { useState } from 'react';
-import { Newspaper, ChevronLeft, Flame, BookOpen } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Newspaper, ChevronLeft, Flame, BookOpen, Share2 } from 'lucide-react';
 import { NewsItem } from '../types';
 import ArticleReaderModal from './ArticleReaderModal';
+import { shareContent } from '../utils/shareUtils';
 
 interface NewsSectionProps {
   news: NewsItem[];
+  activeArticleId?: string | null;
+  onClearActiveArticle?: () => void;
 }
 
-export default function NewsSection({ news }: NewsSectionProps) {
+export default function NewsSection({ news, activeArticleId, onClearActiveArticle }: NewsSectionProps) {
   const [selectedArticle, setSelectedArticle] = useState<NewsItem | null>(null);
   const [openInReadingMode, setOpenInReadingMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (activeArticleId && news.length > 0) {
+      const match = news.find(n => n.id === activeArticleId);
+      if (match) {
+        setSelectedArticle(match);
+      }
+    }
+  }, [activeArticleId, news]);
 
   if (!news || news.length === 0) return null;
 
   const handleOpenStandard = (item: NewsItem) => {
     setSelectedArticle(item);
     setOpenInReadingMode(false);
+    const url = new URL(window.location.href);
+    url.searchParams.set('news', item.id);
+    window.history.pushState(null, '', url.toString());
   };
 
   const handleOpenReadingMode = (e: React.MouseEvent, item: NewsItem) => {
     e.stopPropagation();
     setSelectedArticle(item);
     setOpenInReadingMode(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set('news', item.id);
+    window.history.pushState(null, '', url.toString());
+  };
+
+  const handleClose = () => {
+    setSelectedArticle(null);
+    onClearActiveArticle?.();
+    const url = new URL(window.location.href);
+    url.searchParams.delete('news');
+    url.searchParams.delete('article');
+    window.history.pushState(null, '', url.toString());
   };
 
   return (
@@ -99,14 +126,33 @@ export default function NewsSection({ news }: NewsSectionProps) {
 
               {/* Read Actions Footer */}
               <div className="p-5 pt-0 mt-2 flex items-center justify-between gap-2 border-t border-[#1C2232] pt-4">
-                <button
-                  onClick={(e) => handleOpenReadingMode(e, item)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#181F2E] hover:bg-[#E50914] text-[#CBD5E1] hover:text-white text-xs font-medium transition-colors"
-                  title="فتح المقال في وضع القراءة المريح للعين"
-                >
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>وضع القراءة</span>
-                </button>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={(e) => handleOpenReadingMode(e, item)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#181F2E] hover:bg-[#E50914] text-[#CBD5E1] hover:text-white text-xs font-medium transition-colors"
+                    title="فتح المقال في وضع القراءة المريح للعين"
+                  >
+                    <BookOpen className="w-3.5 h-3.5" />
+                    <span>وضع القراءة</span>
+                  </button>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      shareContent({
+                        title: item.title,
+                        text: item.summary,
+                        type: 'news',
+                        id: item.id
+                      });
+                    }}
+                    className="p-1.5 rounded-lg bg-[#181F2E] hover:bg-[#1E2536] text-[#CBD5E1] hover:text-white text-xs transition-colors"
+                    title="مشاركة رابط هذا التقرير"
+                    aria-label="مشاركة التقرير"
+                  >
+                    <Share2 className="w-3.5 h-3.5 text-[#E50914]" />
+                  </button>
+                </div>
 
                 <div className="flex items-center gap-1 text-xs text-[#64748B] group-hover:text-white transition-colors">
                   <span>قراءة التقرير</span>
@@ -124,7 +170,7 @@ export default function NewsSection({ news }: NewsSectionProps) {
         <ArticleReaderModal
           article={selectedArticle}
           initialReadingMode={openInReadingMode}
-          onClose={() => setSelectedArticle(null)}
+          onClose={handleClose}
         />
       )}
 

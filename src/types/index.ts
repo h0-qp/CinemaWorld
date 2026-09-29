@@ -43,3 +43,28 @@ export type GenreFilter =
   | 'Crime'
   | 'Adventure'
   | 'Animation';
+
+export interface AdBannerItem {
+  id: string;
+  placement: 'header' | 'feed' | 'mid' | 'footer';
+  title: string;
+  subtitle: string;
+  imageUrl?: string;
+  targetUrl: string;
+  buttonText: string;
+  badgeText: string;
+  sponsorName: string;
+  isActive: boolean;
+}
+
+export interface AdSettings {
+  enabled: boolean;
+  networkType: 'adsense' | 'custom' | 'both';
+  adsensePublisherId: string; // e.g. ca-pub-1234567890123456
+  adsenseHeaderSlotId?: string;
+  adsenseFeedSlotId?: string;
+  adsenseMidSlotId?: string;
+  adsenseFooterSlotId?: string;
+  customBanners: AdBannerItem[];
+  updatedAt?: string;
+}

@@ -13,6 +13,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import { NewsItem } from '../types';
+import { shareContent } from '../utils/shareUtils';
 
 interface ArticleReaderModalProps {
   article: NewsItem | null;
@@ -102,15 +103,14 @@ export default function ArticleReaderModal({
 
   const currentTheme = themeStyles[theme];
 
-  const handleShare = () => {
-    if (navigator.share) {
-      navigator.share({
-        title: article.title,
-        text: article.summary,
-        url: window.location.href
-      }).catch(() => {});
-    } else {
-      navigator.clipboard.writeText(`${article.title}\n\n${window.location.href}`);
+  const handleShare = async () => {
+    const res = await shareContent({
+      title: article.title,
+      text: article.summary,
+      type: 'news',
+      id: article.id
+    });
+    if (res.status === 'copied') {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }

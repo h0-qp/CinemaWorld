@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { X, Star, Clock, Clapperboard, Users, Send, Bookmark } from 'lucide-react';
+import { X, Star, Clock, Clapperboard, Users, Send, Bookmark, Share2 } from 'lucide-react';
 import { Movie } from '../types';
 import { useAuth } from '../context/AuthContext';
+import { shareContent } from '../utils/shareUtils';
 
 interface MovieModalProps {
   movie: Movie | null;
@@ -45,6 +46,20 @@ export default function MovieModal({ movie, onClose }: MovieModalProps) {
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={() => shareContent({
+                title: movie.title,
+                text: movie.synopsis,
+                type: 'movie',
+                id: movie.id
+              })}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#222B3D] bg-[#151A26] hover:bg-[#1E2536] text-[#CBD5E1] hover:text-white transition-colors text-xs font-medium"
+              title="مشاركة رابط الفيلم المباشر"
+            >
+              <Share2 className="w-3.5 h-3.5 text-[#E50914]" />
+              <span className="hidden sm:inline">مشاركة العمل</span>
+            </button>
+
             <button
               onClick={() => toggleWatchlist(movie)}
               className={`p-2 rounded-lg border transition-colors ${

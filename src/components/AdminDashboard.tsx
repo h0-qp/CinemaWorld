@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Film, 
   Plus, 
@@ -12,10 +12,16 @@ import {
   CheckCircle2, 
   Radio,
   Clock,
-  Star
+  Star,
+  Megaphone,
+  Sliders,
+  Sparkles,
+  ToggleLeft,
+  ToggleRight
 } from 'lucide-react';
-import { Movie, NewsItem } from '../types';
-import { saveMovie, removeMovie, saveNews, removeNews } from '../firebase/contentService';
+import { Movie, NewsItem, AdSettings, AdBannerItem } from '../types';
+import { saveMovie, removeMovie, saveNews, removeNews, subscribeToAdSettings, saveAdSettings } from '../firebase/contentService';
+import { DEFAULT_AD_SETTINGS } from '../data/defaultAds';
 import ImageUploadInput from './ImageUploadInput';
 
 interface AdminDashboardProps {
@@ -46,8 +52,38 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
-  // Active Tab: 'movies' | 'news'
-  const [activeTab, setActiveTab] = useState<'movies' | 'news'>('movies');
+  // Active Tab: 'movies' | 'news' | 'ads'
+  const [activeTab, setActiveTab] = useState<'movies' | 'news' | 'ads'>('movies');
+
+  // Ad Settings State
+  const [adSettings, setAdSettings] = useState<AdSettings>(DEFAULT_AD_SETTINGS);
+  const [savingAds, setSavingAds] = useState(false);
+
+  useEffect(() => {
+    const unsub = subscribeToAdSettings((settings) => {
+      setAdSettings(settings);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleSaveAds = async () => {
+    setSavingAds(true);
+    try {
+      await saveAdSettings(adSettings);
+      showToast('تم حفظ وتطبيق إعدادات الإعلانات بنجاح!');
+    } catch (err) {
+      showToast('حدث خطأ أثناء حفظ إعدادات الإعلانات');
+    } finally {
+      setSavingAds(false);
+    }
+  };
+
+  const handleUpdateCustomBanner = (bannerId: string, updates: Partial<AdBannerItem>) => {
+    setAdSettings(prev => ({
+      ...prev,
+      customBanners: prev.customBanners.map(b => b.id === bannerId ? { ...b, ...updates } : b)
+    }));
+  };
 
   // Movie Form State
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
@@ -357,6 +393,18 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
             <Newspaper className="w-3.5 h-3.5 text-[#E50914]" />
             <span>نشرة الأخبار والمقالات ({news.length})</span>
           </button>
+
+          <button
+            onClick={() => setActiveTab('ads')}
+            className={`flex items-center gap-2 px-5 py-3 text-xs font-semibold tracking-wider transition-colors border-b-2 ${
+              activeTab === 'ads'
+                ? 'border-[#E50914] text-white bg-[#141A26]'
+                : 'border-transparent text-[#94A3B8] hover:text-white'
+            }`}
+          >
+            <Megaphone className="w-3.5 h-3.5 text-[#E50914]" />
+            <span>إدارة الإعلانات والرعايات</span>
+          </button>
         </div>
       </div>
 
@@ -538,6 +586,379 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* ADS & MONETIZATION TAB */}
+        {activeTab === 'ads' && (
+          <div className="space-y-8 animate-fadeIn">
+            {/* Tab Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#1E2536]">
+              <div>
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-xl font-bold text-white">
+                    إدارة الإعلانات والشراكات الرسمية
+                  </h2>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-[#E50914]/20 border border-[#E50914]/30 text-[#E50914]">
+                    Google AdSense & Sponsors
+                  </span>
+                </div>
+                <p className="text-xs text-[#94A3B8] mt-1">
+                  تفعيل الإعلانات، ربط حساب Google AdSense الحقيقي، وتخصيص البنرات السينمائية للرعاة.
+                </p>
+              </div>
+
+              <button
+                onClick={handleSaveAds}
+                disabled={savingAds}
+                className="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#E50914] hover:bg-[#DC2626] text-white font-semibold text-xs transition-colors shadow-lg shadow-[#E50914]/20"
+              >
+                <Save className="w-4 h-4" />
+                <span>{savingAds ? 'جاري الحفظ والتطبيق...' : 'حفظ وتطبيق الإعلانات'}</span>
+              </button>
+            </div>
+
+            {/* SECTION 1: GLOBAL TOGGLE & NETWORK TYPE */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              {/* Main Toggle Card */}
+              <div className="p-6 rounded-2xl bg-[#121622] border border-[#1E2536] space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-[#1A2030] border border-[#252E40] flex items-center justify-center text-[#E50914]">
+                      <Megaphone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-white">تفعيل الإعلانات بالموقع</h3>
+                      <p className="text-[11px] text-[#94A3B8]">إظهار أو إخفاء كافة الإعلانات والبنرات بنقرة واحدة</p>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setAdSettings(prev => ({ ...prev, enabled: !prev.enabled }))}
+                    className="p-1 text-2xl transition-transform"
+                    title={adSettings.enabled ? 'تعطيل الإعلانات' : 'تفعيل الإعلانات'}
+                  >
+                    {adSettings.enabled ? (
+                      <ToggleRight className="w-10 h-10 text-[#22C55E]" />
+                    ) : (
+                      <ToggleLeft className="w-10 h-10 text-zinc-600" />
+                    )}
+                  </button>
+                </div>
+
+                <div className="pt-2 text-xs">
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-medium ${
+                    adSettings.enabled 
+                      ? 'bg-emerald-950/70 border border-emerald-700/40 text-emerald-300' 
+                      : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                  }`}>
+                    <span className={`w-2 h-2 rounded-full ${adSettings.enabled ? 'bg-emerald-400 animate-pulse' : 'bg-zinc-500'}`} />
+                    {adSettings.enabled ? 'الإعلانات نشطة وتعمل على الموقع' : 'الإعلانات متوقفة حالياً'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Network Selection */}
+              <div className="p-6 rounded-2xl bg-[#121622] border border-[#1E2536] space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-[#1A2030] border border-[#252E40] flex items-center justify-center text-amber-400">
+                    <Sliders className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-white">نظام عرض الإعلانات</h3>
+                    <p className="text-[11px] text-[#94A3B8]">حدد مصدر ظهور الإعلانات للزوار</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-2 pt-1 text-xs">
+                  <label className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+                    adSettings.networkType === 'both'
+                      ? 'bg-[#182030] border-[#E50914] text-white'
+                      : 'bg-[#0E121A] border-[#1E2536] text-[#94A3B8] hover:border-zinc-700'
+                  }`}>
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="networkType"
+                        value="both"
+                        checked={adSettings.networkType === 'both'}
+                        onChange={() => setAdSettings(prev => ({ ...prev, networkType: 'both' }))}
+                        className="text-[#E50914] focus:ring-[#E50914]"
+                      />
+                      <div>
+                        <span className="font-bold text-white block">مزدوج: AdSense + بنرات الشركاء (الموصى به)</span>
+                        <span className="text-[10px] text-zinc-400">يظهر إعلانات غوغل أو بنرات الرعاة السينمائيين تلقائياً</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+                    adSettings.networkType === 'adsense'
+                      ? 'bg-[#182030] border-[#E50914] text-white'
+                      : 'bg-[#0E121A] border-[#1E2536] text-[#94A3B8] hover:border-zinc-700'
+                  }`}>
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="networkType"
+                        value="adsense"
+                        checked={adSettings.networkType === 'adsense'}
+                        onChange={() => setAdSettings(prev => ({ ...prev, networkType: 'adsense' }))}
+                        className="text-[#E50914] focus:ring-[#E50914]"
+                      />
+                      <div>
+                        <span className="font-bold text-white block">Google AdSense فقط</span>
+                        <span className="text-[10px] text-zinc-400">اعتماد شبكة إعلانات غوغل فقط عبر معرفات الفتحات</span>
+                      </div>
+                    </div>
+                  </label>
+
+                  <label className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-colors ${
+                    adSettings.networkType === 'custom'
+                      ? 'bg-[#182030] border-[#E50914] text-white'
+                      : 'bg-[#0E121A] border-[#1E2536] text-[#94A3B8] hover:border-zinc-700'
+                  }`}>
+                    <div className="flex items-center gap-2.5">
+                      <input
+                        type="radio"
+                        name="networkType"
+                        value="custom"
+                        checked={adSettings.networkType === 'custom'}
+                        onChange={() => setAdSettings(prev => ({ ...prev, networkType: 'custom' }))}
+                        className="text-[#E50914] focus:ring-[#E50914]"
+                      />
+                      <div>
+                        <span className="font-bold text-white block">بنرات ورعايات سينمائية خاصة فقط</span>
+                        <span className="text-[10px] text-zinc-400">بدون كود غوغل، تحكم كامل بصور وروابط الرعاة والشركاء</span>
+                      </div>
+                    </div>
+                  </label>
+                </div>
+              </div>
+
+            </div>
+
+            {/* SECTION 2: GOOGLE ADSENSE INTEGRATION */}
+            {(adSettings.networkType === 'adsense' || adSettings.networkType === 'both') && (
+              <div className="p-6 rounded-2xl bg-[#121622] border border-[#1E2536] space-y-6">
+                <div className="flex items-center justify-between pb-3 border-b border-[#1E2536]">
+                  <div>
+                    <h3 className="text-sm font-bold text-white flex items-center gap-2">
+                      <span>إعدادات ربط Google AdSense الحقيقية</span>
+                      <span className="text-[10px] text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-600/30">
+                        Official SDK
+                      </span>
+                    </h3>
+                    <p className="text-xs text-[#94A3B8] mt-0.5">
+                      عند وضع معرّف الناشر (Publisher ID)، يقوم الموقع بحقن سكريبت AdSense الرسمي تلقائياً وتفعيل مساحات الإعلانات.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-semibold text-white mb-1.5">
+                      معرّف الناشر في AdSense (Publisher ID)
+                    </label>
+                    <input
+                      type="text"
+                      value={adSettings.adsensePublisherId || ''}
+                      onChange={(e) => setAdSettings(prev => ({ ...prev, adsensePublisherId: e.target.value.trim() }))}
+                      placeholder="ca-pub-1234567890123456"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0D14] border border-[#1E2536] text-white text-xs font-mono focus:outline-none focus:border-[#E50914]"
+                    />
+                    <span className="text-[10px] text-zinc-500 mt-1 block">
+                      تلقاه في لوحة تحكم AdSense تحت: الحساب (Account) ➔ معلومات الحساب (Account Information).
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-white mb-1.5">
+                      فتحة الإعلان العلوي (Header Slot ID)
+                    </label>
+                    <input
+                      type="text"
+                      value={adSettings.adsenseHeaderSlotId || ''}
+                      onChange={(e) => setAdSettings(prev => ({ ...prev, adsenseHeaderSlotId: e.target.value.trim() }))}
+                      placeholder="1234567890"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0D14] border border-[#1E2536] text-white text-xs font-mono focus:outline-none focus:border-[#E50914]"
+                    />
+                    <span className="text-[10px] text-zinc-500 mt-1 block">معرّف الوحدة الإعلانية العريضة (Display Ad Unit).</span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-white mb-1.5">
+                      فتحة إعلان المقالات والترشيحات (In-Feed Slot ID)
+                    </label>
+                    <input
+                      type="text"
+                      value={adSettings.adsenseFeedSlotId || ''}
+                      onChange={(e) => setAdSettings(prev => ({ ...prev, adsenseFeedSlotId: e.target.value.trim() }))}
+                      placeholder="9876543210"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0D14] border border-[#1E2536] text-white text-xs font-mono focus:outline-none focus:border-[#E50914]"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-semibold text-white mb-1.5">
+                      فتحة الإعلان العريض منتصف الصفحة (Mid-Page Slot ID)
+                    </label>
+                    <input
+                      type="text"
+                      value={adSettings.adsenseMidSlotId || ''}
+                      onChange={(e) => setAdSettings(prev => ({ ...prev, adsenseMidSlotId: e.target.value.trim() }))}
+                      placeholder="5544332211"
+                      className="w-full px-3.5 py-2.5 rounded-xl bg-[#0A0D14] border border-[#1E2536] text-white text-xs font-mono focus:outline-none focus:border-[#E50914]"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SECTION 3: CUSTOM CINEMA SPONSORS / DIRECT PARTNERS */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-white flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <span>تخصيص بنرات الرعايات والشركاء السينمائيين</span>
+                  </h3>
+                  <p className="text-xs text-[#94A3B8] mt-0.5">
+                    بنرات عالية الفخامة بتصميم سينمائي مخصص تظهر في أماكن استراتيجية بالموقع لزيادة الأرباح.
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6">
+                {adSettings.customBanners?.map((banner) => (
+                  <div
+                    key={banner.id}
+                    className="p-5 sm:p-6 rounded-2xl bg-[#121622] border border-[#1E2536] space-y-4 hover:border-zinc-700 transition-colors"
+                  >
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E2536]">
+                      <div className="flex items-center gap-3">
+                        <span className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-[#1A2030] text-[#CBD5E1] border border-[#252E40]">
+                          {banner.placement === 'header' ? 'البنر العلوي الرئيسي (Header)' :
+                           banner.placement === 'feed' ? 'بنر شريط المقالات والترشيحات (In-Feed)' :
+                           banner.placement === 'mid' ? 'بنر سينمائي عريض (Mid-Page Hero)' :
+                           'بنر تذييل الصفحة (Footer)'}
+                        </span>
+                        <span className="text-xs text-zinc-400 font-mono">
+                          {banner.sponsorName}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs text-[#94A3B8]">حالة البنر:</span>
+                        <button
+                          type="button"
+                          onClick={() => handleUpdateCustomBanner(banner.id, { isActive: !banner.isActive })}
+                          className={`px-3 py-1 rounded-lg text-xs font-semibold transition-colors ${
+                            banner.isActive
+                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-700/50'
+                              : 'bg-zinc-800 text-zinc-400 border border-zinc-700'
+                          }`}
+                        >
+                          {banner.isActive ? 'مفعل ويعمل' : 'معطل'}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                      <div>
+                        <label className="block text-zinc-400 mb-1 font-medium">عنوان الإعلان</label>
+                        <input
+                          type="text"
+                          value={banner.title}
+                          onChange={(e) => handleUpdateCustomBanner(banner.id, { title: e.target.value })}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-400 mb-1 font-medium">اسم الراعي / الشريك (Sponsor Name)</label>
+                        <input
+                          type="text"
+                          value={banner.sponsorName}
+                          onChange={(e) => handleUpdateCustomBanner(banner.id, { sponsorName: e.target.value })}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <label className="block text-zinc-400 mb-1 font-medium">الوصف والنص الإعلاني</label>
+                        <textarea
+                          rows={2}
+                          value={banner.subtitle}
+                          onChange={(e) => handleUpdateCustomBanner(banner.id, { subtitle: e.target.value })}
+                          className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                        />
+                      </div>
+
+                      <div className="md:col-span-2">
+                        <ImageUploadInput
+                          label="صورة أو بوستر البنر الإعلاني (يدعم الرفع من الجهاز أو الرابط المباشر)"
+                          value={banner.imageUrl || ''}
+                          onChange={(val) => handleUpdateCustomBanner(banner.id, { imageUrl: val })}
+                          placeholder="https://images.unsplash.com/..."
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-zinc-400 mb-1 font-medium">الرابط عند الضغط (Target URL)</label>
+                        <input
+                          type="url"
+                          value={banner.targetUrl}
+                          onChange={(e) => handleUpdateCustomBanner(banner.id, { targetUrl: e.target.value })}
+                          placeholder="https://..."
+                          className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="block text-zinc-400 mb-1 font-medium">نص الزر (CTA)</label>
+                          <input
+                            type="text"
+                            value={banner.buttonText}
+                            onChange={(e) => handleUpdateCustomBanner(banner.id, { buttonText: e.target.value })}
+                            placeholder="احجز الآن"
+                            className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-zinc-400 mb-1 font-medium">شارة التمييز (Badge)</label>
+                          <input
+                            type="text"
+                            value={banner.badgeText}
+                            onChange={(e) => handleUpdateCustomBanner(banner.id, { badgeText: e.target.value })}
+                            placeholder="إعلان ممول"
+                            className="w-full px-3 py-2 rounded-lg bg-[#0A0D14] border border-[#1E2536] text-white focus:outline-none focus:border-[#E50914]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+
+            {/* Bottom Save Action */}
+            <div className="flex justify-end pt-4 border-t border-[#1E2536]">
+              <button
+                onClick={handleSaveAds}
+                disabled={savingAds}
+                className="flex items-center gap-2 px-8 py-3 rounded-xl bg-[#E50914] hover:bg-[#DC2626] text-white font-bold text-xs transition-all shadow-xl shadow-[#E50914]/25 hover:scale-105"
+              >
+                <Save className="w-4 h-4" />
+                <span>{savingAds ? 'جاري الحفظ والتطبيق...' : 'حفظ وتطبيق إعدادات الإعلانات فورياً'}</span>
+              </button>
+            </div>
+
           </div>
         )}
 
