@@ -536,7 +536,7 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                     <img
                       src={item.imageUrl}
                       alt={item.title}
-                      className="w-full md:w-36 h-24 object-cover rounded-lg border border-[#1E2536] shrink-0 bg-black"
+                      className="w-full md:w-36 h-28 object-contain rounded-lg border border-[#1E2536] shrink-0 bg-[#090C12] p-1"
                       referrerPolicy="no-referrer"
                     />
                   )}

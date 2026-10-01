@@ -314,15 +314,14 @@ export default function ArticleReaderModal({
               </div>
             )}
 
-            {/* Optional Cover Image */}
+            {/* Optional Cover Image - Always preserves full original dimensions without cropping */}
             {article.imageUrl && (!isReadingMode || showImage) && (
-              <div className={`overflow-hidden rounded-xl border border-[#202738] ${
-                isReadingMode ? 'my-6 max-h-96' : 'h-56 sm:h-72'
-              }`}>
+              <div className="my-5 w-full rounded-2xl overflow-hidden border border-[#202738] bg-[#080B11] flex items-center justify-center p-1 sm:p-2 shadow-2xl">
                 <img
                   src={article.imageUrl}
                   alt={article.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-auto max-h-[85vh] object-contain rounded-xl block mx-auto transition-transform"
+                  loading="lazy"
                 />
               </div>
             )}

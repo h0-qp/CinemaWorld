@@ -84,23 +84,23 @@ export default function NewsSection({ news, activeArticleId, onClearActiveArticl
               onClick={() => handleOpenStandard(item)}
             >
               <div className="space-y-3.5">
-                {/* News Image Preview if Available */}
+                {/* News Image Preview if Available - Full display without cropping */}
                 {item.imageUrl && (
-                  <div className="h-48 overflow-hidden bg-[#0A0D14] relative">
+                  <div className="w-full h-56 sm:h-64 overflow-hidden bg-[#090C12] relative flex items-center justify-center p-2 border-b border-[#1E2536]">
                     <img 
                       src={item.imageUrl} 
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                      className="w-full h-full object-contain group-hover:scale-[1.02] transition-transform duration-300" 
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#121622] via-transparent to-transparent opacity-80" />
                     
                     {/* Category & Date badge on image */}
-                    <div className="absolute top-3 inset-x-3 flex items-center justify-between">
-                      <span className="px-2.5 py-1 rounded bg-black/70 backdrop-blur-md text-white text-[11px] font-medium border border-white/10">
+                    <div className="absolute top-3 inset-x-3 flex items-center justify-between pointer-events-none">
+                      <span className="px-2.5 py-1 rounded bg-black/80 backdrop-blur-md text-white text-[11px] font-medium border border-white/10 shadow-md">
                         {item.category}
                       </span>
                       {item.isHot && (
-                        <span className="flex items-center gap-1 text-rose-300 font-bold bg-rose-950/80 px-2 py-0.5 rounded border border-rose-800 text-[10px]">
+                        <span className="flex items-center gap-1 text-rose-300 font-bold bg-rose-950/90 px-2 py-0.5 rounded border border-rose-800 text-[10px] shadow-md">
                           <Flame className="w-3 h-3 fill-current" />
                           <span>عاجل</span>
                         </span>
