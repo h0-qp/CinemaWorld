@@ -16,11 +16,15 @@ export default function Hero({ featuredMovie, onWatchTrailer }: HeroProps) {
     <section id="hero" className="relative min-h-[85vh] flex items-center bg-[#0B0E14] border-b border-[#1E2433] overflow-hidden">
       
       {/* Cinematic Backdrop with Smooth Lighting Scrims - High Clarity & Visibility */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <div 
+        className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'hidden' }}
+      >
         <img
           src={featuredMovie.backdropUrl || featuredMovie.posterUrl}
           alt={featuredMovie.title}
           className="w-full h-full object-cover object-center opacity-65 sm:opacity-75 scale-100 transition-opacity duration-700"
+          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
         {/* Soft bottom scrim to blend into page */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/40 to-[#0B0E14]/20" />
