@@ -20,7 +20,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 import { Movie, NewsItem, AdSettings, AdBannerItem } from '../types';
-import { saveMovie, removeMovie, saveNews, removeNews, subscribeToAdSettings, saveAdSettings } from '../firebase/contentService';
+import { saveMovie, removeMovie, setHeroFeaturedMovie, saveNews, removeNews, subscribeToAdSettings, saveAdSettings } from '../firebase/contentService';
 import { DEFAULT_AD_SETTINGS } from '../data/defaultAds';
 import ImageUploadInput from './ImageUploadInput';
 
@@ -161,13 +161,31 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
 
     try {
       setSavingMovie(true);
-      await saveMovie(editingMovie);
+      if (editingMovie.isFeatured) {
+        const others = movies.filter(m => m.id !== editingMovie.id);
+        await setHeroFeaturedMovie(editingMovie.id, [...others, editingMovie]);
+      } else {
+        await saveMovie(editingMovie);
+      }
       setIsMovieFormOpen(false);
       setEditingMovie(null);
       showToast(`تم حفظ وتحديث فيلم "${editingMovie.title}" بنجاح في Firebase.`);
     } catch (err) {
       console.error(err);
       alert('حدث خطأ أثناء حفظ الفيلم.');
+    } finally {
+      setSavingMovie(false);
+    }
+  };
+
+  const handleSetHeroMovie = async (movie: Movie) => {
+    try {
+      setSavingMovie(true);
+      await setHeroFeaturedMovie(movie.id, movies);
+      showToast(`تم تعيين "${movie.title}" كفيلم رئيسي للواجهة بنجاح! 🌟`);
+    } catch (err) {
+      console.error(err);
+      alert('حدث خطأ أثناء تعيين فيلم الواجهة.');
     } finally {
       setSavingMovie(false);
     }
@@ -477,9 +495,24 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                   </div>
 
                   <div className="flex items-center justify-between pt-3 mt-4 border-t border-[#1C2232]">
-                    <span className="text-[11px] text-[#64748B] truncate max-w-[140px]">
-                      {movie.genre.join(' · ')}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      {movie.isFeatured ? (
+                        <span className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-rose-950/80 border border-[#E50914]/50 text-[#E50914] text-[11px] font-bold shadow-xs">
+                          <Sparkles className="w-3 h-3 text-[#E50914]" />
+                          <span>فيلم الواجهة 🌟</span>
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleSetHeroMovie(movie)}
+                          className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#181F2E] hover:bg-amber-500/20 text-[#CBD5E1] hover:text-amber-300 border border-[#222B3D] hover:border-amber-500/40 text-[11px] transition-colors"
+                          title="عرض هذا الفيلم في الواجهة والشاشة الرئيسية للموقع"
+                        >
+                          <Sparkles className="w-3 h-3 text-amber-400" />
+                          <span>تعيين للواجهة</span>
+                        </button>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => handleEditMovie(movie)}
@@ -1118,6 +1151,20 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                 <div className="flex items-center gap-2 p-3 rounded-lg bg-[#0A0D14] border border-[#1E2536]">
                   <input
                     type="checkbox"
+                    id="isFeaturedCheck"
+                    checked={!!editingMovie.isFeatured}
+                    onChange={(e) => setEditingMovie({ ...editingMovie, isFeatured: e.target.checked })}
+                    className="w-4 h-4 accent-[#E50914]"
+                  />
+                  <label htmlFor="isFeaturedCheck" className="text-white cursor-pointer font-medium flex items-center gap-1.5">
+                    <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                    <span>عرض كفيلم رئيسي في الشاشة الأولى (Hero)</span>
+                  </label>
+                </div>
+
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-[#0A0D14] border border-[#1E2536]">
+                  <input
+                    type="checkbox"
                     id="isUpcomingCheck"
                     checked={editingMovie.isUpcoming}
                     onChange={(e) => setEditingMovie({ ...editingMovie, isUpcoming: e.target.checked })}
@@ -1129,7 +1176,7 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
                 </div>
 
                 {editingMovie.isUpcoming && (
-                  <div>
+                  <div className="sm:col-span-2">
                     <label className="block text-[#CBD5E1] font-medium mb-1.5">تاريخ الإصدار المتوقع</label>
                     <input
                       type="date"

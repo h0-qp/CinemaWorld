@@ -13,7 +13,7 @@ import {
   Bookmark
 } from 'lucide-react';
 import { NewsItem } from '../types';
-import { shareContent } from '../utils/shareUtils';
+import { shareContent, triggerToast } from '../utils/shareUtils';
 
 interface ArticleReaderModalProps {
   article: NewsItem | null;
@@ -24,6 +24,8 @@ interface ArticleReaderModalProps {
 type ReadingTheme = 'sepia' | 'charcoal' | 'oled';
 type FontSize = 'sm' | 'md' | 'lg' | 'xl';
 type FontFamily = 'amiri' | 'cairo';
+
+const SAVED_ARTICLES_KEY = 'cinemaworld_saved_articles';
 
 export default function ArticleReaderModal({ 
   article, 
@@ -37,9 +39,40 @@ export default function ArticleReaderModal({
   const [showImage, setShowImage] = useState(true);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [copied, setCopied] = useState(false);
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(() => {
+    if (!article) return false;
+    try {
+      const raw = localStorage.getItem(SAVED_ARTICLES_KEY);
+      const ids: string[] = raw ? JSON.parse(raw) : [];
+      return ids.includes(article.id);
+    } catch {
+      return false;
+    }
+  });
 
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!article) return;
+    try {
+      const raw = localStorage.getItem(SAVED_ARTICLES_KEY);
+      const ids: string[] = raw ? JSON.parse(raw) : [];
+      setIsSaved(ids.includes(article.id));
+    } catch {}
+  }, [article]);
+
+  const handleToggleSaveArticle = () => {
+    if (!article) return;
+    try {
+      const raw = localStorage.getItem(SAVED_ARTICLES_KEY);
+      const ids: string[] = raw ? JSON.parse(raw) : [];
+      const willSave = !ids.includes(article.id);
+      const updated = willSave ? [...ids, article.id] : ids.filter(id => id !== article.id);
+      localStorage.setItem(SAVED_ARTICLES_KEY, JSON.stringify(updated));
+      setIsSaved(willSave);
+      triggerToast(willSave ? 'تم حفظ المقال في قائمتك بنجاح! 📑' : 'تمت إزالة المقال من المحفوظات');
+    } catch {}
+  };
 
   useEffect(() => {
     setIsReadingMode(initialReadingMode);
@@ -358,7 +391,7 @@ export default function ArticleReaderModal({
 
               <div className="flex items-center gap-2 self-stretch sm:self-auto justify-end">
                 <button
-                  onClick={() => setIsSaved(!isSaved)}
+                  onClick={handleToggleSaveArticle}
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border transition-colors ${
                     isSaved 
                       ? 'bg-[#E50914] border-[#E50914] text-white font-semibold' 

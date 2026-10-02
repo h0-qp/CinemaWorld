@@ -12,6 +12,7 @@ export interface Movie {
   trailerUrl: string;
   releaseDate?: string;
   isUpcoming: boolean;
+  isFeatured?: boolean;
   type?: 'movie' | 'series';
   director?: string;
   cast?: string[];

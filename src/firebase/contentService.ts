@@ -79,6 +79,18 @@ export async function removeMovie(movieId: string): Promise<void> {
 }
 
 /**
+ * Set a specific movie as the hero featured movie and unset others
+ */
+export async function setHeroFeaturedMovie(movieId: string, allMovies: Movie[]): Promise<void> {
+  for (const m of allMovies) {
+    const isTarget = m.id === movieId;
+    if (m.isFeatured !== isTarget) {
+      await saveMovie({ ...m, isFeatured: isTarget });
+    }
+  }
+}
+
+/**
  * Real-time subscription to news collection with fallback
  */
 export function subscribeToNews(callback: (news: NewsItem[]) => void) {

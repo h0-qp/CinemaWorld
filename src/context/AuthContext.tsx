@@ -9,6 +9,9 @@ import {
 } from 'firebase/firestore';
 import { auth, db, loginWithGoogle, logoutUser, handleFirestoreError, OperationType } from '../firebase/config';
 import { Movie } from '../types';
+import { triggerToast } from '../utils/shareUtils';
+
+const LOCAL_WATCHLIST_KEY = 'cinemaworld_saved_watchlist';
 
 interface AuthContextType {
   user: User | null;
@@ -25,7 +28,14 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [watchlist, setWatchlist] = useState<string[]>([]);
+  const [watchlist, setWatchlist] = useState<string[]>(() => {
+    try {
+      const local = localStorage.getItem(LOCAL_WATCHLIST_KEY);
+      return local ? JSON.parse(local) : [];
+    } catch {
+      return [];
+    }
+  });
 
   useEffect(() => {
     const unsubscribeAuth = onAuthStateChanged(auth, (currentUser) => {
@@ -50,12 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribeAuth();
   }, []);
 
-  // Listen to Watchlist subcollection in Firestore when user is signed in
+  // Listen to Watchlist subcollection in Firestore when user is signed in and merge with local
   useEffect(() => {
-    if (!user) {
-      setWatchlist([]);
-      return;
-    }
+    if (!user) return;
 
     const watchlistPath = `users/${user.uid}/watchlist`;
     const watchlistCol = collection(db, watchlistPath);
@@ -63,14 +70,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribeWatchlist = onSnapshot(
       watchlistCol,
       (snapshot) => {
-        const ids: string[] = [];
+        const cloudIds: string[] = [];
         snapshot.forEach((docItem) => {
-          ids.push(docItem.id);
+          cloudIds.push(docItem.id);
         });
-        setWatchlist(ids);
+        setWatchlist((prev) => {
+          const merged = Array.from(new Set([...prev, ...cloudIds]));
+          try {
+            localStorage.setItem(LOCAL_WATCHLIST_KEY, JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
       },
       (error) => {
-        handleFirestoreError(error, OperationType.LIST, watchlistPath);
+        console.warn('Watchlist cloud sync notice:', error?.message || error);
       }
     );
 
@@ -78,33 +91,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user]);
 
   const toggleWatchlist = async (movie: Movie) => {
-    let currentUser = user;
-    if (!currentUser) {
-      currentUser = await loginWithGoogle();
-      if (!currentUser) return;
-    }
-
-    const movieDocPath = `users/${currentUser.uid}/watchlist/${movie.id}`;
     const alreadySaved = watchlist.includes(movie.id);
+    const nextWatchlist = alreadySaved 
+      ? watchlist.filter(id => id !== movie.id) 
+      : [...watchlist, movie.id];
 
-    // Optimistic UI update
-    setWatchlist(prev => alreadySaved ? prev.filter(id => id !== movie.id) : [...prev, movie.id]);
-
+    // 1. Instant local persistence & UI update
+    setWatchlist(nextWatchlist);
     try {
-      if (alreadySaved) {
-        await deleteDoc(doc(db, movieDocPath));
-      } else {
-        await setDoc(doc(db, movieDocPath), {
-          movieId: movie.id,
-          title: movie.title,
-          posterUrl: movie.posterUrl,
-          year: movie.year,
-          rating: movie.rating,
-          addedAt: new Date().toISOString()
-        });
+      localStorage.setItem(LOCAL_WATCHLIST_KEY, JSON.stringify(nextWatchlist));
+    } catch {}
+
+    // 2. Instant Toast Feedback
+    triggerToast(
+      alreadySaved 
+        ? `تمت إزالة "${movie.title}" من قائمتك المحفوظة`
+        : `تم حفظ "${movie.title}" في قائمتك بنجاح! ⭐`
+    );
+
+    // 3. Background Cloud Sync if user is logged in
+    if (user) {
+      const movieDocPath = `users/${user.uid}/watchlist/${movie.id}`;
+      try {
+        if (alreadySaved) {
+          await deleteDoc(doc(db, movieDocPath));
+        } else {
+          await setDoc(doc(db, movieDocPath), {
+            movieId: movie.id,
+            title: movie.title,
+            posterUrl: movie.posterUrl,
+            year: movie.year,
+            rating: movie.rating,
+            addedAt: new Date().toISOString()
+          });
+        }
+      } catch (err) {
+        console.warn('Watchlist sync error:', err);
       }
-    } catch (err) {
-      handleFirestoreError(err, alreadySaved ? OperationType.DELETE : OperationType.WRITE, movieDocPath);
     }
   };
 

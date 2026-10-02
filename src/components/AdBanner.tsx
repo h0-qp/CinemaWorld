@@ -17,41 +17,44 @@ declare global {
 export default function AdBanner({ placement, settings, className = '' }: AdBannerProps) {
   const adRef = useRef<HTMLModElement | null>(null);
 
-  // If ads are disabled globally
-  if (!settings || !settings.enabled) {
+  const isEnabled = !!(settings && settings.enabled);
+  const isAdSenseActive = isEnabled && (settings?.networkType === 'adsense' || settings?.networkType === 'both') && !!settings?.adsensePublisherId;
+  const slotId = 
+    placement === 'header' ? settings?.adsenseHeaderSlotId :
+    placement === 'feed' ? settings?.adsenseFeedSlotId :
+    placement === 'mid' ? settings?.adsenseMidSlotId :
+    settings?.adsenseFooterSlotId;
+
+  // Load Google AdSense Script if Publisher ID exists (Hooks must ALWAYS run unconditionally)
+  useEffect(() => {
+    if (!isEnabled || !isAdSenseActive || !settings?.adsensePublisherId) {
+      return;
+    }
+
+    const scriptId = 'google-adsense-script';
+    if (!document.getElementById(scriptId)) {
+      const script = document.createElement('script');
+      script.id = scriptId;
+      script.async = true;
+      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${settings.adsensePublisherId}`;
+      script.crossOrigin = 'anonymous';
+      document.head.appendChild(script);
+    }
+
+    // Try pushing adsbygoogle
+    try {
+      if (typeof window !== 'undefined' && slotId && adRef.current) {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      }
+    } catch (err) {
+      // Silently catch adblocker / duplicate push exceptions
+    }
+  }, [isEnabled, isAdSenseActive, settings?.adsensePublisherId, slotId]);
+
+  // If ads are disabled globally, exit safely AFTER all hooks have executed
+  if (!isEnabled) {
     return null;
   }
-
-  const isAdSenseActive = (settings.networkType === 'adsense' || settings.networkType === 'both') && !!settings.adsensePublisherId;
-  const slotId = 
-    placement === 'header' ? settings.adsenseHeaderSlotId :
-    placement === 'feed' ? settings.adsenseFeedSlotId :
-    placement === 'mid' ? settings.adsenseMidSlotId :
-    settings.adsenseFooterSlotId;
-
-  // Load Google AdSense Script if Publisher ID exists
-  useEffect(() => {
-    if (isAdSenseActive && settings.adsensePublisherId) {
-      const scriptId = 'google-adsense-script';
-      if (!document.getElementById(scriptId)) {
-        const script = document.createElement('script');
-        script.id = scriptId;
-        script.async = true;
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${settings.adsensePublisherId}`;
-        script.crossOrigin = 'anonymous';
-        document.head.appendChild(script);
-      }
-
-      // Try pushing adsbygoogle
-      try {
-        if (typeof window !== 'undefined' && slotId && adRef.current) {
-          (window.adsbygoogle = window.adsbygoogle || []).push({});
-        }
-      } catch (err) {
-        // Silently catch adblocker / duplicate push exceptions
-      }
-    }
-  }, [isAdSenseActive, settings.adsensePublisherId, slotId]);
 
   // Find custom banner for this placement
   const customBanner = settings.customBanners?.find(b => b.placement === placement && b.isActive);

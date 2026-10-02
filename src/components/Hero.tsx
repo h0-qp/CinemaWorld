@@ -15,15 +15,17 @@ export default function Hero({ featuredMovie, onWatchTrailer }: HeroProps) {
   return (
     <section id="hero" className="relative min-h-[85vh] flex items-center bg-[#0B0E14] border-b border-[#1E2433] overflow-hidden">
       
-      {/* Cinematic Backdrop with Smooth Lighting Scrims */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Cinematic Backdrop with Smooth Lighting Scrims - High Clarity & Visibility */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <img
-          src={featuredMovie.backdropUrl}
+          src={featuredMovie.backdropUrl || featuredMovie.posterUrl}
           alt={featuredMovie.title}
-          className="w-full h-full object-cover object-center opacity-25 filter brightness-75 scale-105"
+          className="w-full h-full object-cover object-center opacity-65 sm:opacity-75 scale-100 transition-opacity duration-700"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/85 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0B0E14] via-[#0B0E14]/90 to-transparent" />
+        {/* Soft bottom scrim to blend into page */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B0E14] via-[#0B0E14]/40 to-[#0B0E14]/20" />
+        {/* Right-to-left scrim for crisp text legibility while keeping center & left image bright */}
+        <div className="absolute inset-0 bg-gradient-to-l from-[#0B0E14]/85 via-[#0B0E14]/50 to-transparent" />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-20 w-full">

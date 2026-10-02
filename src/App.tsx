@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MOVIES_DATA, NEWS_DATA } from './data/mockData';
 import { Movie, NewsItem, GenreFilter, AdSettings } from './types';
 import { DEFAULT_AD_SETTINGS } from './data/defaultAds';
@@ -114,10 +114,14 @@ export default function App() {
     window.history.pushState(null, '', url.toString());
   };
 
-  // Featured movie for Hero
-  const featuredMovie = (movies && movies.length > 0) 
-    ? (movies.find(m => m.id === 'dune-2') || movies[0]) 
-    : MOVIES_DATA[0];
+  // Featured movie for Hero: prioritizes any movie set as isFeatured, or the newest added movie
+  const featuredMovie = useMemo(() => {
+    if (!movies || movies.length === 0) return MOVIES_DATA[0];
+    const explicitlyFeatured = movies.find(m => m.isFeatured);
+    if (explicitlyFeatured) return explicitlyFeatured;
+    const nonUpcoming = movies.filter(m => !m.isUpcoming);
+    return nonUpcoming.length > 0 ? nonUpcoming[0] : movies[0];
+  }, [movies]);
 
   // Upcoming movies for Release Radar
   const upcomingMovies = movies.filter(m => m.isUpcoming);
