@@ -20,7 +20,7 @@ import {
   ToggleRight
 } from 'lucide-react';
 import { Movie, NewsItem, AdSettings, AdBannerItem } from '../types';
-import { saveMovie, removeMovie, setHeroFeaturedMovie, saveNews, removeNews, subscribeToAdSettings, saveAdSettings } from '../firebase/contentService';
+import { saveMovie, removeMovie, setHeroFeaturedMovie, saveNews, removeNews, subscribeToAdSettings, saveAdSettings, sortNewsByLatest } from '../firebase/contentService';
 import { DEFAULT_AD_SETTINGS } from '../data/defaultAds';
 import ImageUploadInput from './ImageUploadInput';
 
@@ -560,7 +560,7 @@ export default function AdminDashboard({ movies, news, onExit }: AdminDashboardP
             </div>
 
             <div className="space-y-4">
-              {news.map((item) => (
+              {sortNewsByLatest(news).map((item) => (
                 <div 
                   key={item.id}
                   className="rounded-xl bg-[#121622] border border-[#1E2536] p-5 flex flex-col md:flex-row gap-5 items-start justify-between hover:border-[#2E394E] transition-all shadow-sm"

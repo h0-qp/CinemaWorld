@@ -91,6 +91,29 @@ export async function setHeroFeaturedMovie(movieId: string, allMovies: Movie[]):
 }
 
 /**
+ * Helper to sort news items chronologically: newest publication date / creation first
+ */
+export function sortNewsByLatest(items: NewsItem[]): NewsItem[] {
+  return [...items].sort((a, b) => {
+    const timeA = a.date ? new Date(a.date).getTime() : 0;
+    const timeB = b.date ? new Date(b.date).getTime() : 0;
+    if (timeB !== timeA) {
+      return timeB - timeA;
+    }
+
+    const createdA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+    const createdB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+    if (createdB !== createdA) {
+      return createdB - createdA;
+    }
+
+    const idA = Number(a.id?.replace(/\D/g, '')) || 0;
+    const idB = Number(b.id?.replace(/\D/g, '')) || 0;
+    return idB - idA;
+  });
+}
+
+/**
  * Real-time subscription to news collection with fallback
  */
 export function subscribeToNews(callback: (news: NewsItem[]) => void) {
@@ -99,7 +122,7 @@ export function subscribeToNews(callback: (news: NewsItem[]) => void) {
     colRef,
     (snapshot) => {
       if (snapshot.empty) {
-        callback(NEWS_DATA);
+        callback(sortNewsByLatest(NEWS_DATA));
       } else {
         const firestoreNews: NewsItem[] = [];
         snapshot.forEach((docSnap) => {
@@ -114,12 +137,12 @@ export function subscribeToNews(callback: (news: NewsItem[]) => void) {
             merged.push(defaultNews);
           }
         }
-        callback(merged);
+        callback(sortNewsByLatest(merged));
       }
     },
     (err) => {
       console.warn('Falling back to local news data due to Firestore listener notice:', err?.message || err);
-      callback(NEWS_DATA);
+      callback(sortNewsByLatest(NEWS_DATA));
     }
   );
 }

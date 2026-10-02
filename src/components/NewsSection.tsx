@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Newspaper, ChevronLeft, Flame, BookOpen, Share2 } from 'lucide-react';
 import { NewsItem } from '../types';
 import ArticleReaderModal from './ArticleReaderModal';
 import { shareContent } from '../utils/shareUtils';
+import { sortNewsByLatest } from '../firebase/contentService';
 
 interface NewsSectionProps {
   news: NewsItem[];
@@ -23,7 +24,11 @@ export default function NewsSection({ news, activeArticleId, onClearActiveArticl
     }
   }, [activeArticleId, news]);
 
-  if (!news || news.length === 0) return null;
+  const sortedNews = useMemo(() => {
+    return sortNewsByLatest(news);
+  }, [news]);
+
+  if (!sortedNews || sortedNews.length === 0) return null;
 
   const handleOpenStandard = (item: NewsItem) => {
     setSelectedArticle(item);
@@ -77,7 +82,7 @@ export default function NewsSection({ news, activeArticleId, onClearActiveArticl
 
         {/* News Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {news.map((item) => (
+          {sortedNews.map((item) => (
             <article 
               key={item.id}
               className="flex flex-col justify-between rounded-xl overflow-hidden bg-[#121622] border border-[#1E2536] hover:border-[#2F3A50] transition-all duration-300 text-right group cursor-pointer shadow-md"
